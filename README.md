@@ -28,7 +28,7 @@ laufen lassen. Da dem aber leider nicht so ist, sollte man den "Autoritativen Se
 Client Seite/dem Client Projekt trennen. Muss daher ein kleines LAN Projekt erstellen, damit
 ich einen LAN Modus einbauen kann.
 
-Dazu muss ich das ganze LAN Konzept allerdings erst einmal anstrahieren. Ich meine in der Theorie
+Dazu muss ich das ganze LAN Konzept allerdings erst einmal abstrahieren. Ich meine in der Theorie
 das ganze Netzwerk Gedöns verstanden zu haben, aber es ist noch ein weiter Weg um ein
 Pro in Sachen Netzwerk und C# zu sein (nicht, dass das wirklich mein Ziel wäre).
 
