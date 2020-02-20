@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,12 +10,12 @@ using UnityEngine;
 
 public class ServerReceive {
     #region Packets
-    public static void Ping(int _fromClient, Packet _packet) {
-
+    public static void Ping(ref EndPoint _remoteEndPoint, ref Socket _socketServer,  Packet _packet) {
+        Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint.ToString()}");
 
         // Send a pong to the remote (client)
-        //byte[] str = Encoding.ASCII.GetBytes("pong");
-        //_socketServer.SendTo(str, _remoteEndPoint);
+        byte[] str = Encoding.ASCII.GetBytes("pong");
+        _socketServer.SendTo(str, _remoteEndPoint);
     }
     #endregion
 
