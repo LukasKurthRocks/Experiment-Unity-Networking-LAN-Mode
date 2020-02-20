@@ -1,6 +1,13 @@
 # LAN Multiplayer
 Gefühlt mein zehntes Netzwerk Projekt. Müsste mal meinen Unity Ordner ausmisten ...
 
+## Aktuelles
+
+Bin gerade noch am testen. Dies ist daher noch zu nichts zu gebrauchen.
+
+### Zu Erledigen
+* [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)
+
 ## Info
 Ziel ist es einen LAN Modus zu haben, damit man für kleine Spiele mit Freunden nicht auf
 einen Server warten muss. Eventuell geht der Server irgendwann auch nicht mehr und dann
