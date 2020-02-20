@@ -7,6 +7,8 @@ Bin gerade noch am testen. Dies ist daher noch zu nichts zu gebrauchen.
 
 ### Zu Erledigen
 * [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)
+* Muss den Lan Manager noch entsprechend hinzufügen und anpassen. Der verschickt nur einen String,
+ich brauche aber ein Paket aus der Packet.cs. Kriege ich hin, aber nicht mehr heute.
 
 ## Info
 Ziel ist es einen LAN Modus zu haben, damit man für kleine Spiele mit Freunden nicht auf
