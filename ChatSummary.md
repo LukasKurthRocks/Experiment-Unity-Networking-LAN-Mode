@@ -25,4 +25,10 @@ systems publicly too much. But ill think about it."
 ### Options:
 * P2P ("TL;DR: peer to peer is scary and building your own backend solution is difficult.")
 * ~~Bluetooth (suboptimal, insecure)~~
+  * https://assetstore.unity.com/packages/tools/network/bluetooth-le-for-ios-tvos-and-android-26661
+  * https://assetstore.unity.com/packages/tools/network/bluetooth-networking-for-ios-tvos-and-android-124274
+  * https://devblog.blackberry.com/2014/02/diary-of-a-unity-3d-newbie-bluetooth-low-energy-plugins (2014)
+  * https://assetstore.unity.com/packages/tools/integration/native-android-toolkit-mt-139365 (Android Tools, is bluetooth active, no bluetooth functionality)
+  * https://stackoverflow.com/a/18984325 (Android CAN NOT connect to iOS with Bluetooth, Apple prevents this)
+  * http://minhhh.github.io/posts/unity-local-network-multiplayer (Possible Options)
 * Minimized LAN/Server/Host/MasterClient
