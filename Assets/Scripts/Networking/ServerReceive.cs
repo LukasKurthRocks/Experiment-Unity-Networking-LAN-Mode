@@ -10,6 +10,8 @@ using UnityEngine;
 
 public class ServerReceive {
     #region Packets
+    // TODO: Das mit dem _removeEndPoint und dem _socketServer muss ich noch ein einer ServerSend Klasse machen ...
+    // Bei Tom seinem war es durch die Dictionary mit den Clients was anders (client.SendIntoGame())...
     public static void Ping(ref EndPoint _remoteEndPoint, ref Socket _socketServer,  Packet _packet) {
         Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint.ToString()}");
 
