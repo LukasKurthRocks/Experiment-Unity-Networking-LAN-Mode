@@ -51,3 +51,4 @@ ___
 * https://github.com/Unity-Technologies/EntityComponentSystemSamples
 * https://gist.github.com/darkguy2008/413a6fea3a5b4e67e5e0d96f750088a9
 * https://www.codeproject.com/Articles/16935/A-Chat-Application-Using-Asynchronous-UDP-sockets
+* https://forum.unity.com/threads/c-detecting-connected-devices-through-lan.297115/
