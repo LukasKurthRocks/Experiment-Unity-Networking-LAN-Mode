@@ -10,14 +10,34 @@ using UnityEngine;
 
 public class ServerReceive {
     #region Packets
-    // TODO: Das mit dem _removeEndPoint und dem _socketServer muss ich noch ein einer ServerSend Klasse machen ...
-    // Bei Tom seinem war es durch die Dictionary mit den Clients was anders (client.SendIntoGame())...
+    /**
+     * NOTE: _remoteEndPoint and _socketServer (even if "only" referred) do not belong into here.
+     * So todo for me: Creating LANServer class for stripped down functionality in local network.
+     * Also, i do not really need the _clients from Toms Server class for the ping.
+     * Still having to create it for the rest of the lan server ...
+     */
     public static void Ping(ref EndPoint _remoteEndPoint, ref Socket _socketServer,  Packet _packet) {
         Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint.ToString()}");
 
+        if (_packet == null)
+            Debug.Log("Received empty ping packet.");
+
+        //id = _packet.ReadInt();
+        //username = _packet.ReadString();
+
         // Send a pong to the remote (client)
-        byte[] str = Encoding.ASCII.GetBytes("pong");
-        _socketServer.SendTo(str, _remoteEndPoint);
+        //byte[] str = Encoding.ASCII.GetBytes("pong");
+        //_socketServer.SendTo(str, _remoteEndPoint);
+
+        using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
+            _returnPacket.Write("pong");
+            _returnPacket.WriteLength();
+
+            _socketServer.SendTo(_returnPacket.ToArray(), _returnPacket.Length(), SocketFlags.None, _remoteEndPoint);
+        }
+
+        //_socketServer.BeginSend()
+        //_socketServer.SendTo();
     }
     #endregion
 
