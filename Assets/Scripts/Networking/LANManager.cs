@@ -125,18 +125,8 @@ public class LanManager : Singleton<LanManager> {
                     IPEndPoint destinationEndPoint = new IPEndPoint(IPAddress.Parse(subAddress + ".255"), port);
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
-                    using (Packet _packet = new Packet((int)ClientPackets.ping)) {
-                        _packet.Write("ping");
-                        _packet.WriteLength();
-
-                        if (_packet == null)
-                            Debug.LogWarning("_packet == null");
-                        if (_socketClient == null)
-                            Debug.LogWarning("_socketClient == null");
-
-                        //_socketClient.SendTo(str, destinationEndPoint);
-                        _socketClient.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, destinationEndPoint);
-                    }
+                    // TODO: Not passing _socketClient and destinationEndPoint
+                    ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
 
                     _percentSearching = index / countMax;
 

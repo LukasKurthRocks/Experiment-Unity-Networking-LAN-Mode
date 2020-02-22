@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-public class ServerReceive {
+public class LocalServerReceive {
     #region Packets
     /**
      * NOTE: _remoteEndPoint and _socketServer (even if "only" referred) do not belong into here.
@@ -17,7 +17,7 @@ public class ServerReceive {
      * Still having to create it for the rest of the lan server ...
      */
     public static void Ping(ref EndPoint _remoteEndPoint, ref Socket _socketServer,  Packet _packet) {
-        Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint.ToString()}");
+        Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint}");
 
         if (_packet == null)
             Debug.Log("Received empty ping packet.");
@@ -29,15 +29,7 @@ public class ServerReceive {
         //byte[] str = Encoding.ASCII.GetBytes("pong");
         //_socketServer.SendTo(str, _remoteEndPoint);
 
-        using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
-            _returnPacket.Write("pong");
-            _returnPacket.WriteLength();
-
-            _socketServer.SendTo(_returnPacket.ToArray(), _returnPacket.Length(), SocketFlags.None, _remoteEndPoint);
-        }
-
-        //_socketServer.BeginSend()
-        //_socketServer.SendTo();
+        LocalServerSend.SendPong(ref _socketServer, ref _remoteEndPoint);
     }
     #endregion
 

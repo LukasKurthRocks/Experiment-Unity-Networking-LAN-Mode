@@ -1,128 +1,98 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Net.NetworkInformation;
 using UnityEngine;
 
-public class NetworkManager : Singleton<NetworkManager> {
+// Local Server Logic ...
+// Part is still split in LANManager and NetworkManager
+
+public class LocalServer {
+    public static int MaxPlayers { get; private set; }
+    public static int Port { get; private set; }
+    //public static Dictionary<int, LANClient> clients = new Dictionary<int, LANClient>();
+
     public static int dataBufferSize = 4096;
 
     public delegate void PacketHandler(ref EndPoint _remoteEndPoint, ref Socket _socketServer, Packet _packet);
     public static Dictionary<int, PacketHandler> packetHandlers;
 
-    private Socket _socketServer;
-    private EndPoint _remoteEndPoint;
-    private Packet _receivedData; // Handling data
-    private byte[] _receiveBuffer;
+    private static Socket _socketServer;
+    private static EndPoint _remoteEndPoint;
 
-    private void Start() {
-        // DoStart();
-    }
+    private static Packet _receivedData; // Handling data
+    private static byte[] _receiveBuffer;
 
-    // TODO: MONO BEHAVIOUR! ( No Singleton ... )
-    public void DoStart() {
+    public static void Start(int _maxPlayers, int _portNumber) {
+        MaxPlayers = _maxPlayers;
+        Port = _portNumber;
+
         // Handling data
         _receivedData = new Packet();
         _receiveBuffer = new byte[dataBufferSize];
 
+        Debug.Log("LANServer::Start(): Starting server...");
         InitializeServerData();
 
-        // TODO: Later just do this via button or headless...
-        StartServer(26950);
-    }
-
-    private void OnApplicationQuit() {
-        CloseServer();
-    }
-
-    public void StartServer(int port) {
         if (_socketServer == null) {
             try {
+                // TODO. Find out which is better: new UdpClient(Port);
                 _socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
                 if (_socketServer == null) {
-                    Debug.LogWarning("SocketServer creation failed");
+                    Debug.LogWarning("LANServer::Start(): SocketServer creation failed");
                     return;
                 }
 
                 // Check if we received pings
-                _socketServer.Bind(new IPEndPoint(IPAddress.Any, port));
+                _socketServer.Bind(new IPEndPoint(IPAddress.Any, Port));
 
+                // incoming traffic endpoint
                 _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
                 //_socketServer.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(OnReceive), null);
-                _socketServer.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(OnReceive), null);
+                _socketServer.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(ServerReceiveCallback), null);
             } catch (Exception ex) {
                 Debug.Log(ex.Message);
             }
 
-            Debug.Log($"Started server on port {port}");
+            Debug.Log($"LANServer::Start(): Started server on port {Port}");
         }
     }
 
-    public void CloseServer() {
-        if (_socketServer != null) {
-            _socketServer.Close();
-            _socketServer = null;
-
-            Debug.Log("Closed socket on server.");
-        }
-    }
-
-    // NOT WORKING. COMPARE OTHER SOLUTION
-    void OnReceive(IAsyncResult _asyncResult) {
-        Debug.Log("OnReceive()...");
+    private static void ServerReceiveCallback(IAsyncResult _asyncResult) {
+        Debug.Log("LANServer::SocketOnReceiveCallBack(): received ...");
         if (_socketServer != null) {
             try {
                 int size = _socketServer.EndReceiveFrom(_asyncResult, ref _remoteEndPoint);
-                //_socketServer.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(OnReceive), null);
-                _socketServer.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(OnReceive), null);
+                _socketServer.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(ServerReceiveCallback), null);
 
                 if (size <= 0) {
-                    // Disconnecting client/player
-                    Debug.LogWarning("size <= 0");
+                    // TODO: Disconnecting client/player?
                     return;
                 }
-                
+
                 // Having data, copying bytes into array
                 byte[] _data = new byte[size];
-
-                if (_receiveBuffer == null)
-                    Debug.LogWarning("_receiveBuffer == null");
-                if (_data == null)
-                    Debug.LogWarning("_data == null");
-                if (size == 0)
-                    Debug.LogWarning("size == 0");
-
-                Debug.Log("NM: Copying array ...");
                 Array.Copy(sourceArray: _receiveBuffer, destinationArray: _data, length: size);
 
                 // int = 4, no more data...
                 if (_data.Length < 4) {
-                    Debug.LogWarning("_data.Lengt < 4");
-                    // Disconnecting client
+                    // TODO: Disconnecting client!?
                     //Instance.Disconnect();
                     return;
                 }
 
                 // Handle data
-                Debug.Log("Calling handle data ...");
                 _receivedData.Reset(HandleData(_data));
-
-                // Send a pong to the remote (client)
-                //byte[] str = Encoding.ASCII.GetBytes("pong");
-                //_socketServer.SendTo(str, _remoteEndPoint);
             } catch (Exception ex) {
                 Debug.Log(ex.ToString());
             }
         }
     }
 
-    private bool HandleData(byte[] _data) {
-        Debug.Log("Handling Data ...");
+    private static bool HandleData(byte[] _data) {
         int _packetLength = 0;
 
         _receivedData.SetBytes(_data);
@@ -131,27 +101,20 @@ public class NetworkManager : Singleton<NetworkManager> {
         if (_receivedData.UnreadLength() >= 4) {
             _packetLength = _receivedData.ReadInt();
             if (_packetLength <= 0) {
-                Debug.Log("Finished Handling Data!");
                 return true;
             }
-
-            // TODO: Not working with "old" LanManager. It sends string directly, so no Packet.
-            Debug.Log($"_packetLength = {_packetLength}");
         }
 
         // as long as we get data...
         while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
-            Debug.Log($"Having data with packetLength: {_packetLength}");
             byte[] _packetBytes = _receivedData.ReadBytes(_packetLength);
 
-            Debug.Log("NM:: Before handling the actual packet ...");
             // Note: _socketServer.RemoteEndPoint did not work!?
             using (Packet _packet = new Packet(_packetBytes)) {
                 int _packetId = _packet.ReadInt();
-                Debug.Log($"Calling packetHandler[{_packetId}]({_remoteEndPoint}, {_socketServer.ToString()}, {_packet.ToString()})!");
+                Debug.Log($"LANServer::HandleData(): Calling packetHandler[{_packetId}]({_remoteEndPoint}, {_socketServer.ToString()}, {_packet.ToString()})!");
                 packetHandlers[_packetId](ref _remoteEndPoint, ref _socketServer, _packet);
             }
-            Debug.Log("NM:: After _packet ...");
 
             _packetLength = 0;
 
@@ -169,17 +132,54 @@ public class NetworkManager : Singleton<NetworkManager> {
             return true;
         }
 
-        Debug.Log($"Still having data. Returning false...");
         // partial packet left in data
         return false;
     }
 
+    public static void Stop() {
+        if (_socketServer != null) {
+            _socketServer.Close();
+            _socketServer = null;
+
+            Debug.Log("LANServer::CloseServer(): Closed socket on server.");
+        }
+
+        //clients.Clear();
+    }
+
+    // TODO: Create this for the rest of the funcs.
+    public static void SendUDPData(EndPoint _clientEndPoint, Packet _packet) {
+    }
+
+
+    // TODO: CHeck if only usable for ping?
+    public static void SendUDPData(Packet _packet) {
+        try {
+            if (_remoteEndPoint != null) {
+                _socketServer.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, _remoteEndPoint);
+            }
+        } catch (Exception _exception) {
+            Debug.Log($"Server::SendUDPData(): Error sending data to {_remoteEndPoint} via UDP: {_exception}");
+        }
+    }
+
     private static void InitializeServerData() {
-        // TODO: Initialize Client Array
+        /*
+        for (int i = 1; i <= MaxPlayers; i++) {
+            clients.Add(i, new LANClient(i));
+        }
+        */
 
         packetHandlers = new Dictionary<int, PacketHandler>() {
-            { (int)ClientPackets.ping, ServerReceive.Ping }
+            { (int)ClientPackets.ping, LocalServerReceive.Ping }
         };
         Debug.Log("Server::InitializeServerData(): Initialized packets.");
     }
+
+    // TODO: Move this somewhere else!!
+    /*
+    private void OnApplicationQuit() {
+        CloseServer();
+    }
+    */
 }

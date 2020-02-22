@@ -36,12 +36,12 @@ public class NewLANManager : Singleton<NewLANManager> {
 
         //Server.Start(50, 26950);
         _isStarted = true;
-        LANServer.Start(NetworkingConstants.STD_MAX_PLAYERS, NetworkingConstants.STD_SERVER_PORT);
+        LocalServer.Start(NetworkingConstants.STD_MAX_PLAYERS, NetworkingConstants.STD_SERVER_PORT);
     }
 
     public void StopServer() {
         _isStarted = false;
-        LANServer.Stop();
+        LocalServer.Stop();
     }
 
     /// <summary>Checking server for headless mode</summary>
