@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+[Obsolete("CommandTypes should not be used anymore!", true)]
 // The commands for interaction between the server and the client
 enum Command {
     Ping,    // Just to find the server

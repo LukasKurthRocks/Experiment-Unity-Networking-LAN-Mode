@@ -31,10 +31,17 @@ public class ClientConnector : Singleton<ClientConnector> {
     }
 
     // TODO: Do not want to connect to server just yet, but i NEED the udp part for pinging....
-    public void CreateShortInstance() {
+    public void CreateShortInstance(int port) {
         Debug.Log("Creating a ping instance ...");
 
-        _clientIsConnected = false;
+        InitializeClientData();
+
+        // only in lan... hm?
+        if (udp.endPoint == null)
+            udp = new UDP();
+
+        _clientIsConnected = true;
+        udp.Connect(port);
     }
 
     public void ConnectToServer() {
@@ -181,6 +188,9 @@ public class ClientConnector : Singleton<ClientConnector> {
         public void Connect(int _localPort) {
             socket = new UdpClient(_localPort);
 
+            if (endPoint == null)
+                Debug.LogWarning("ClientMain::UDP::Connect(): endPoint is null");
+
             socket.Connect(endPoint);
             socket.BeginReceive(ReceiveCallback, null);
 
@@ -203,8 +213,17 @@ public class ClientConnector : Singleton<ClientConnector> {
 
         private void ReceiveCallback(IAsyncResult _asyncResult) {
             try {
+                if (endPoint == null)
+                    Debug.LogError("ClientMain::UDP::ReceiveCallback(): endPoint is null");
+                if (socket == null)
+                    Debug.LogError("ClientMain::UDP::ReceiveCallback(): socket is null");
+
                 byte[] _data = socket.EndReceive(_asyncResult, ref endPoint);
                 socket.BeginReceive(ReceiveCallback, null);
+
+                if (_data == null)
+                    Debug.LogWarning("_data in clientconnector is null");
+                Debug.Log("_data.Length = " + _data.Length);
 
                 // LESS THAN 4 STUPID MEE!!
                 // int = 4, no more data...
@@ -216,7 +235,9 @@ public class ClientConnector : Singleton<ClientConnector> {
 
                 // MS DOCS!!
                 HandleData(_data);
-            } catch {
+            } catch (Exception _exception) {
+                Debug.LogError($"ClientMain::UDP::ReceiveCallback(): Error handling receiveCallback: {_exception}");
+
                 // Disconnecting client
                 Disconnect();
             }

@@ -151,7 +151,6 @@ public class LocalServer {
     public static void SendUDPData(EndPoint _clientEndPoint, Packet _packet) {
     }
 
-
     // TODO: CHeck if only usable for ping?
     public static void SendUDPData(Packet _packet) {
         try {
@@ -174,6 +173,12 @@ public class LocalServer {
             { (int)ClientPackets.ping, LocalServerReceive.Ping }
         };
         Debug.Log("Server::InitializeServerData(): Initialized packets.");
+    }
+
+    // just for sending the pong, so local player has ip
+    public static string GetLocalAddress() {
+        IPEndPoint endPoint = _socketServer.LocalEndPoint as IPEndPoint;
+        return endPoint.Address.ToString();
     }
 
     // TODO: Move this somewhere else!!

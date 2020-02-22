@@ -31,9 +31,15 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
     }
 
     public IEnumerator SendPing(int port) {
+        Debug.Log("SendPing(): started");
         _addresses.Clear();
 
-        if (_socketClient != null) {
+        if (ClientConnector.Instance.udp.endPoint == null)
+            Debug.LogWarning("endpoint is null");
+
+        
+            Debug.Log("SendPing(): socket client != null");
+
             int maxSend = 4;
             float countMax = (maxSend * _localSubAddresses.Count) - 1;
 
@@ -51,7 +57,8 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
                     // TODO: Not passing _socketClient and destinationEndPoint
-                    ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
+                    //ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
+                    ClientSend.SendPing();
 
                     _percentSearching = index / countMax;
 
@@ -61,7 +68,6 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 }
             }
             _isSearching = false;
-        }
     }
 
     /// <summary>Adding local ip addresses - from current host - to dictionary.</summary>
@@ -80,5 +86,16 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 }
             }
         }
+    }
+
+    public void AddAddress(string _address) {
+        // This is not ourself and we do not already have this address
+        if (!_localAddresses.Contains(_address) && !_addresses.Contains(_address)) {
+            _addresses.Add(_address);
+        }
+
+        // Just in case someone asking why local server not found.
+        if (_localAddresses.Contains(_address))
+            Debug.LogWarning("Server is local: " + _address);
     }
 }

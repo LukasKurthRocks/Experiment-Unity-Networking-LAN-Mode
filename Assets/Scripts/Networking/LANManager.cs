@@ -196,4 +196,15 @@ public class LanManager : Singleton<LanManager> {
             }
         }
     }
+
+    public void AddAddress(string _address) {
+        // This is not ourself and we do not already have this address
+        if (!_localAddresses.Contains(_address) && !_addresses.Contains(_address)) {
+            _addresses.Add(_address);
+        }
+
+        // Just in case someone asking why local server not found.
+        if (_localAddresses.Contains(_address))
+            Debug.LogWarning("Server is local: " + _address);
+    }
 }

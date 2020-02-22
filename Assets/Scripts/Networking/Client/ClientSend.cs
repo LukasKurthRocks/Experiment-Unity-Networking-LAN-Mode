@@ -22,18 +22,23 @@ public class ClientSend : MonoBehaviour {
     public static void SendPing(ref Socket _socketClient, ref IPEndPoint _destinationEndPoint) {
         using (Packet _packet = new Packet((int)ClientPackets.ping)) {
             _packet.Write("ping");
+
+            // Not via ClientSend()
             _packet.WriteLength();
-
-            if (_packet == null)
-                Debug.LogWarning("_packet == null");
-            if (_socketClient == null)
-                Debug.LogWarning("_socketClient == null");
-
-            //_socketClient.SendTo(str, destinationEndPoint);
             _socketClient.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, _destinationEndPoint);
 
+            // Send UDP via ClientSend. Basic UDP has to be enabled for this...
             // TODO: Remove WriteLength when using this...
             //SendUDPData(_packet);
+        }
+    }
+
+    public static void SendPing() {
+        using (Packet _packet = new Packet((int)ClientPackets.ping)) {
+            _packet.Write("ping");
+
+            // Send UDP via ClientSend. Basic UDP has to be enabled for this...
+            SendUDPData(_packet);
         }
     }
 
@@ -43,6 +48,9 @@ public class ClientSend : MonoBehaviour {
 
             // Not found a better way of getting the username field text.
             //_packet.Write(UIManager.Instance.GetUsernameText());
+
+            // TODO: Replace with username
+            _packet.Write("REPLACEMENT USER NAME");
 
             SendTCPData(_packet);
         }
