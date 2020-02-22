@@ -46,6 +46,9 @@ public class LocalServer {
                 }
 
                 // Check if we received pings
+                IPEndPoint _serverEndPoint = new IPEndPoint(IPAddress.Any, Port);
+                Debug.Log($"IPE: {_serverEndPoint.Address}");
+
                 _socketServer.Bind(new IPEndPoint(IPAddress.Any, Port));
 
                 // incoming traffic endpoint
@@ -57,6 +60,7 @@ public class LocalServer {
                 Debug.Log(ex.Message);
             }
 
+            Debug.Log($"LocalServer::Start(): {_socketServer.LocalEndPoint}, {_socketServer.RemoteEndPoint}, {_socketServer}");
             Debug.Log($"LANServer::Start(): Started server on port {Port}");
         }
     }
@@ -93,13 +97,16 @@ public class LocalServer {
     }
 
     private static bool HandleData(byte[] _data) {
+        Debug.Log("LocalServer::HandleData(): Called ...");
         int _packetLength = 0;
 
         _receivedData.SetBytes(_data);
 
         // int has 4 bytes
         if (_receivedData.UnreadLength() >= 4) {
+            Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4");
             _packetLength = _receivedData.ReadInt();
+            Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}");
             if (_packetLength <= 0) {
                 return true;
             }
@@ -107,6 +114,7 @@ public class LocalServer {
 
         // as long as we get data...
         while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
+            Debug.Log("LocalServer::HandleData(): While having data ...");
             byte[] _packetBytes = _receivedData.ReadBytes(_packetLength);
 
             // Note: _socketServer.RemoteEndPoint did not work!?
@@ -115,6 +123,7 @@ public class LocalServer {
                 Debug.Log($"LANServer::HandleData(): Calling packetHandler[{_packetId}]({_remoteEndPoint}, {_socketServer.ToString()}, {_packet.ToString()})!");
                 packetHandlers[_packetId](ref _remoteEndPoint, ref _socketServer, _packet);
             }
+            Debug.Log("LocalServer::HandleData(): After packet.");
 
             _packetLength = 0;
 
@@ -155,6 +164,7 @@ public class LocalServer {
     public static void SendUDPData(Packet _packet) {
         try {
             if (_remoteEndPoint != null) {
+                Debug.Log($"LocalServer::SendUDPData(): Sending with {_socketServer.LocalEndPoint}, {_remoteEndPoint}");
                 _socketServer.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, _remoteEndPoint);
             }
         } catch (Exception _exception) {

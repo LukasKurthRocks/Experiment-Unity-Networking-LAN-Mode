@@ -26,7 +26,9 @@ public class LANUIManager : MonoBehaviour {
         _port.text = NetworkingConstants.STD_SERVER_PORT.ToString();
         _port.interactable = false;
 
-        LanManager.Instance.ScanHost();
+        //LanManager.Instance.ScanHost();
+        ClientLANHelper.Instance.ScanHost();
+
         //_port.interactable = true;
 
         _startServerButton.interactable = true;
@@ -72,8 +74,8 @@ public class LANUIManager : MonoBehaviour {
     }
     public void StartClient() {
         // NetworkingConstants.STD_SERVER_PORT
-        LanManager.Instance.StartClient(55555);
-        //ClientConnector.Instance.CreateShortInstance(55555);
+        //LanManager.Instance.StartClient(55555);
+        ClientConnector.Instance.CreateShortInstance(55555);
 
         _startClientButton.interactable = false;
         _stopClientButton.interactable = true;
@@ -82,8 +84,8 @@ public class LANUIManager : MonoBehaviour {
         _startPingButton.interactable = true;
     }
     public void StopClient() {
-        LanManager.Instance.CloseClient();
-        //ClientConnector.Instance.Disconnect();
+        //LanManager.Instance.CloseClient();
+        ClientConnector.Instance.Disconnect();
 
         _startClientButton.interactable = true;
         _stopClientButton.interactable = false;
@@ -94,8 +96,8 @@ public class LANUIManager : MonoBehaviour {
 
     public void StartPing() {
         Debug.Log("Starting ping corountine ...");
-        StartCoroutine(LanManager.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
-        //StartCoroutine(ClientLANHelper.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
+        //StartCoroutine(LanManager.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
+        StartCoroutine(ClientLANHelper.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
 
         _startPingButton.interactable = false;
         _percentSlider.SetActive(true);

@@ -181,6 +181,7 @@ public class LanManager : Singleton<LanManager> {
 
     /// <summary>Adding local ip addresses - from current host - to dictionary.</summary>
     public void ScanHost() {
+        Debug.Log("LANManager::ScanHost(): Scanning host for local addresses ...");
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
         foreach (IPAddress ip in host.AddressList) {
@@ -188,6 +189,7 @@ public class LanManager : Singleton<LanManager> {
                 string address = ip.ToString();
                 string subAddress = address.Remove(address.LastIndexOf('.'));
 
+                Debug.Log("LANManager::ScanHost(): IP: " + address);
                 _localAddresses.Add(address);
 
                 if (!_localSubAddresses.Contains(subAddress)) {
@@ -195,16 +197,5 @@ public class LanManager : Singleton<LanManager> {
                 }
             }
         }
-    }
-
-    public void AddAddress(string _address) {
-        // This is not ourself and we do not already have this address
-        if (!_localAddresses.Contains(_address) && !_addresses.Contains(_address)) {
-            _addresses.Add(_address);
-        }
-
-        // Just in case someone asking why local server not found.
-        if (_localAddresses.Contains(_address))
-            Debug.LogWarning("Server is local: " + _address);
     }
 }

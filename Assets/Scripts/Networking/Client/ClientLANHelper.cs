@@ -37,7 +37,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
         if (ClientConnector.Instance.udp.endPoint == null)
             Debug.LogWarning("endpoint is null");
 
-        
+        if (ClientConnector.Instance.udp.endPoint != null) {
             Debug.Log("SendPing(): socket client != null");
 
             int maxSend = 4;
@@ -47,13 +47,17 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
             _isSearching = true;
 
+            Debug.Log($"Values: {maxSend}, {countMax}, {index}, {_isSearching} ");
+
             // Send several pings just to be sure (a ping can be lost!)
             for (int i = 0; i < maxSend; i++) {
-                //Debug.Log($"Ping {i+1}/{maxSend}");
+                Debug.Log($"Ping {i+1}/{maxSend}");
 
                 // For each address that this device has
                 foreach (string subAddress in _localSubAddresses) {
                     IPEndPoint destinationEndPoint = new IPEndPoint(IPAddress.Parse(subAddress + ".255"), port);
+                    Debug.Log($"Ping {i + 1}/{maxSend} to {destinationEndPoint}");
+
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
                     // TODO: Not passing _socketClient and destinationEndPoint
@@ -68,10 +72,12 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 }
             }
             _isSearching = false;
+        }
     }
 
     /// <summary>Adding local ip addresses - from current host - to dictionary.</summary>
     public void ScanHost() {
+        Debug.Log("LanHelper::ScanHost(): Scanning host for local addresses ...");
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
         foreach (IPAddress ip in host.AddressList) {
@@ -79,6 +85,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 string address = ip.ToString();
                 string subAddress = address.Remove(address.LastIndexOf('.'));
 
+                Debug.Log("LanHelper::ScanHost(): IP: " + address);
                 _localAddresses.Add(address);
 
                 if (!_localSubAddresses.Contains(subAddress)) {

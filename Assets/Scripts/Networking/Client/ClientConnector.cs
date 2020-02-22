@@ -210,6 +210,19 @@ public class ClientConnector : Singleton<ClientConnector> {
                 Debug.Log($"ClientMain::UDP::SendData(): Error sending data to server via UDP: {_exception}");
             }
         }
+        
+        // LAN
+        public void SendDataWithoutID(Packet _packet) {
+            try {
+                if (socket != null) {
+                    socket.BeginSend(_packet.ToArray(), _packet.Length(), null, null);
+                } else {
+                    Debug.Log("SendDataWithoutID: Socket is null...");
+                }
+            } catch (Exception _exception) {
+                Debug.Log($"ClientMain::UDP::SendData(): Error sending data to server via UDP: {_exception}");
+            }
+        }
 
         private void ReceiveCallback(IAsyncResult _asyncResult) {
             try {
@@ -244,14 +257,18 @@ public class ClientConnector : Singleton<ClientConnector> {
         }
 
         private void HandleData(byte[] _data) {
+            Debug.Log("ClientConnector::UDP::HandleData(): Handling received data.");
             using (Packet _packet = new Packet(_data)) {
                 int _packetLength = _packet.ReadInt();
                 _data = _packet.ReadBytes(_packetLength);
+
+                Debug.Log($"ClientConnector::UDP::HandleData(): Length: {_packetLength}, DataInfo: {_data.Length}");
             }
 
             ThreadManager.ExecuteOnMainThread(() => {
                 using (Packet _packet = new Packet(_data)) {
                     int _packetId = _packet.ReadInt();
+                    Debug.Log($"ClientConnector::UDP::HandleData(): Calling packet handler with id {_packetId}");
                     _packetHandlers[_packetId](_packet);
                 }
             });

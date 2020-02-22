@@ -15,11 +15,18 @@ public class ClientSend : MonoBehaviour {
         _packet.WriteLength();
         ClientConnector.Instance.udp.SendData(_packet);
     }
+
+    // TODO: Test for LAN
+    private static void SendUDPDataWithoutID(Packet _packet) {
+        _packet.WriteLength();
+        ClientConnector.Instance.udp.SendDataWithoutID(_packet);
+    }
     #endregion
 
     #region Packets
     // TODO: Remove Socket and IPEndPoint.
     public static void SendPing(ref Socket _socketClient, ref IPEndPoint _destinationEndPoint) {
+        Debug.Log("ClientSend::SendPing({_socketClient}, {_destinationEndPoint}): Started...");
         using (Packet _packet = new Packet((int)ClientPackets.ping)) {
             _packet.Write("ping");
 
@@ -34,11 +41,13 @@ public class ClientSend : MonoBehaviour {
     }
 
     public static void SendPing() {
+        Debug.Log("ClientSend::SendPing(): Started...");
         using (Packet _packet = new Packet((int)ClientPackets.ping)) {
             _packet.Write("ping");
 
             // Send UDP via ClientSend. Basic UDP has to be enabled for this...
-            SendUDPData(_packet);
+            //SendUDPData(_packet);
+            SendUDPDataWithoutID(_packet);
         }
     }
 

@@ -17,10 +17,12 @@ public class LocalServerReceive {
      * Still having to create it for the rest of the lan server ...
      */
     public static void Ping(ref EndPoint _remoteEndPoint, ref Socket _socketServer,  Packet _packet) {
-        Debug.Log($"HACKED WAY: Ping to endpoint: {_remoteEndPoint}");
+        Debug.Log($"HACKED WAY: Ping with _remoteEndPoint: {_remoteEndPoint}, localEndPoint: {_socketServer.LocalEndPoint}");
 
         if (_packet == null)
             Debug.Log("Received empty ping packet.");
+
+        Debug.Log("_socketServer.LocalEndPoint");
 
         //id = _packet.ReadInt();
         //username = _packet.ReadString();
