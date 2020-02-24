@@ -20,6 +20,7 @@ public class ClientConnector : Singleton<ClientConnector> {
     private delegate void PacketHandler(Packet _packet);
     private static Dictionary<int, PacketHandler> _packetHandlers;
 
+    // TODO: Create OnStart(), because of having LANServer
     private void Start() {
         Debug.Log("ClientConnector::Start(): called...");
         tcp = new TCP();
@@ -271,9 +272,9 @@ public class ClientConnector : Singleton<ClientConnector> {
         if (_clientIsConnected) {
             _clientIsConnected = false;
 
-            if (tcp.socket != null)
+            if (tcp != null && tcp.socket != null)
                 tcp.socket.Close();
-            if (udp.socket != null)
+            if (udp != null && udp.socket != null)
                 udp.socket.Close();
 
             Debug.Log("ClientConnector::Disconnect(): Disconnected from server.");

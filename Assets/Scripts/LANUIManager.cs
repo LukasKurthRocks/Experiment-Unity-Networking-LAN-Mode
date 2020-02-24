@@ -66,7 +66,7 @@ public class LANUIManager : MonoBehaviour {
     }
 
     public void StartServer() {
-        Debug.Log("UI::StopServer(): Server started.");
+        Debug.Log("UI::StartServer(): Server started.");
         LocalServerManager.Instance.StartServer();
 
         _startServerButton.interactable = false;

@@ -24,6 +24,9 @@ public class LocalServer {
     private static Packet _receivedData; // Handling data
     private static byte[] _receiveBuffer;
 
+    // TODO: Rebuild the server to work with tcp and still having udp socket connection
+    // I am calling brak for now. Tired AF.
+
     public static void Start(int _maxPlayers, int _portNumber) {
         MaxPlayers = _maxPlayers;
         Port = _portNumber;
@@ -47,7 +50,7 @@ public class LocalServer {
 
                 // Check if we received pings
                 IPEndPoint _serverEndPoint = new IPEndPoint(IPAddress.Any, Port);
-                Debug.Log($"IPE: {_serverEndPoint.Address}");
+                //Debug.Log($"IPE: {_serverEndPoint.Address}"); // TODO: Remove
 
                 _socketServer.Bind(new IPEndPoint(IPAddress.Any, Port));
 
@@ -60,7 +63,7 @@ public class LocalServer {
                 Debug.Log(ex.Message);
             }
 
-            Debug.Log($"LocalServer::Start(): {_socketServer.LocalEndPoint}, {_socketServer.RemoteEndPoint}, {_socketServer}");
+            //Debug.Log($"LocalServer::Start(): {_socketServer.LocalEndPoint}, {_socketServer.RemoteEndPoint}, {_socketServer}"); //TODO: REMOVE
             Debug.Log($"LANServer::Start(): Started server on port {Port}");
         }
     }
@@ -97,16 +100,16 @@ public class LocalServer {
     }
 
     private static bool HandleData(byte[] _data) {
-        Debug.Log("LocalServer::HandleData(): Called ...");
+        //Debug.Log("LocalServer::HandleData(): Called ..."); //TODO: Remove
         int _packetLength = 0;
 
         _receivedData.SetBytes(_data);
 
         // int has 4 bytes
         if (_receivedData.UnreadLength() >= 4) {
-            Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4");
+            //Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4"); //TODO: Remove
             _packetLength = _receivedData.ReadInt();
-            Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}");
+            //Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}"); //TODO: Remove
             if (_packetLength <= 0) {
                 return true;
             }
@@ -114,16 +117,16 @@ public class LocalServer {
 
         // as long as we get data...
         while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
-            Debug.Log("LocalServer::HandleData(): While having data ...");
+            //Debug.Log("LocalServer::HandleData(): While having data ..."); //TODO: Remove
             byte[] _packetBytes = _receivedData.ReadBytes(_packetLength);
 
             // Note: _socketServer.RemoteEndPoint did not work!?
             using (Packet _packet = new Packet(_packetBytes)) {
                 int _packetId = _packet.ReadInt();
-                Debug.Log($"LANServer::HandleData(): Calling packetHandler[{_packetId}]({_remoteEndPoint}, {_socketServer.ToString()}, {_packet.ToString()})!");
+                // Debug.Log($"LANServer::HandleData(): Calling packetHandler[{_packetId}]({_remoteEndPoint}, {_socketServer.ToString()}, {_packet.ToString()})!"); //TODO: Remove
                 packetHandlers[_packetId](ref _remoteEndPoint, ref _socketServer, _packet);
             }
-            Debug.Log("LocalServer::HandleData(): After packet.");
+            // Debug.Log("LocalServer::HandleData(): After packet."); //TODO: Remove
 
             _packetLength = 0;
 
@@ -182,7 +185,7 @@ public class LocalServer {
         packetHandlers = new Dictionary<int, PacketHandler>() {
             { (int)ClientPackets.ping, LocalServerReceive.Ping }
         };
-        Debug.Log("Server::InitializeServerData(): Initialized packets.");
+        Debug.Log("LANServer::InitializeServerData(): Initialized packets.");
     }
 
     // just for sending the pong, so local player has ip
