@@ -127,7 +127,7 @@ public class OldLanManager : Singleton<OldLanManager> {
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
                     // TODO: Not passing _socketClient and destinationEndPoint
-                    ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
+                    //ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
 
                     _percentSearching = index / countMax;
 

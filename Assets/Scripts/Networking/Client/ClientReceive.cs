@@ -44,25 +44,5 @@ public class ClientReceive : MonoBehaviour {
 
         ClientManager.players[_id].transform.rotation = _rotation;
     }
-
-    public static void Pong(Packet _packet) {
-        Debug.Log("Pong received ...");
-
-        string _message = _packet.ReadString();
-        string _serverAddress = _packet.ReadString();
-        //int _maximalPlayers = _packet.ReadInt();
-
-        // might not be actual current...
-        // without relay server I would have to constantly ping the server
-        // or have a udp stream constantly checking data...
-        //int _currentPlayers = _packet.ReadInt();
-
-        //string address = _remoteEndPoint.ToString().Split(':')[0];
-        Debug.Log("Message was: " + _message + ", serverAddress: " + _serverAddress);
-
-        // Adding receive Pong to address...
-        //LanManager.Instance.AddAddress(_serverAddress);
-        ClientLANHelper.Instance.AddAddress(_serverAddress);
-    }
     #endregion
 }

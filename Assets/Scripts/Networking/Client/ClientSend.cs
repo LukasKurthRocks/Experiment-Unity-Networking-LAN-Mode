@@ -15,50 +15,16 @@ public class ClientSend : MonoBehaviour {
         _packet.WriteLength();
         ClientConnector.Instance.udp.SendData(_packet);
     }
-
-    // TODO: Test for LAN
-    private static void SendUDPDataWithoutID(Packet _packet) {
-        _packet.WriteLength();
-        ClientConnector.Instance.udp.SendDataWithoutID(_packet);
-    }
     #endregion
 
     #region Packets
-    // TODO: Remove Socket and IPEndPoint.
-    public static void SendPing(ref Socket _socketClient, ref IPEndPoint _destinationEndPoint) {
-        Debug.Log("ClientSend::SendPing({_socketClient}, {_destinationEndPoint}): Started...");
-        using (Packet _packet = new Packet((int)ClientPackets.ping)) {
-            _packet.Write("ping");
-
-            // Not via ClientSend()
-            _packet.WriteLength();
-            _socketClient.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, _destinationEndPoint);
-
-            // Send UDP via ClientSend. Basic UDP has to be enabled for this...
-            // TODO: Remove WriteLength when using this...
-            //SendUDPData(_packet);
-        }
-    }
-
-    public static void SendPing() {
-        Debug.Log("ClientSend::SendPing(): Started...");
-        using (Packet _packet = new Packet((int)ClientPackets.ping)) {
-            _packet.Write("ping");
-
-            // Send UDP via ClientSend. Basic UDP has to be enabled for this...
-            //SendUDPData(_packet);
-            SendUDPDataWithoutID(_packet);
-        }
-    }
-
     public static void WelcomeReceived() {
         using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived)) {
             _packet.Write(ClientConnector.Instance.myId);
 
+            // TODO: Implement Username
             // Not found a better way of getting the username field text.
             //_packet.Write(UIManager.Instance.GetUsernameText());
-
-            // TODO: Replace with username
             _packet.Write("REPLACEMENT USER NAME");
 
             SendTCPData(_packet);

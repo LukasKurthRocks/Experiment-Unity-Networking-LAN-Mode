@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClientConnector : Singleton<ClientConnector> {
     public static int dataBufferSize = 4096;
@@ -28,20 +29,6 @@ public class ClientConnector : Singleton<ClientConnector> {
     // Unity Editor does not properly close open connections via PlayMode
     private void OnApplicationQuit() {
         Disconnect();
-    }
-
-    // TODO: Do not want to connect to server just yet, but i NEED the udp part for pinging....
-    public void CreateShortInstance(int port) {
-        Debug.Log("Creating a ping instance ...");
-
-        InitializeClientData();
-
-        // only in lan... hm?
-        if (udp.endPoint == null)
-            udp = new UDP();
-
-        _clientIsConnected = true;
-        udp.Connect(port);
     }
 
     public void ConnectToServer() {
@@ -79,9 +66,8 @@ public class ClientConnector : Singleton<ClientConnector> {
                 Disconnect();
                 Instance.Disconnect();
 
-                // TODO: Move somewhere or implement a LANSceneController or something ...
-                // Call your function for main menu throwback...
-                //SceneController.Instance.LoadScene(0);
+                // Reload MainMenu when disconnected.
+                SceneManager.LoadScene(0);
             }
         }
 
@@ -210,19 +196,6 @@ public class ClientConnector : Singleton<ClientConnector> {
                 Debug.Log($"ClientMain::UDP::SendData(): Error sending data to server via UDP: {_exception}");
             }
         }
-        
-        // TODO: Test if this can work in LAN or remove this.
-        public void SendDataWithoutID(Packet _packet) {
-            try {
-                if (socket != null) {
-                    socket.BeginSend(_packet.ToArray(), _packet.Length(), null, null);
-                } else {
-                    Debug.Log("SendDataWithoutID: Socket is null...");
-                }
-            } catch (Exception _exception) {
-                Debug.Log($"ClientMain::UDP::SendData(): Error sending data to server via UDP: {_exception}");
-            }
-        }
 
         private void ReceiveCallback(IAsyncResult _asyncResult) {
             try {
@@ -284,7 +257,7 @@ public class ClientConnector : Singleton<ClientConnector> {
 
     private void InitializeClientData() {
         _packetHandlers = new Dictionary<int, PacketHandler>() {
-            {(int)ServerPackets.pong, ClientReceive.Pong },
+            //{(int)ServerPackets.pong, ClientReceive.Pong },
             {(int)ServerPackets.welcome, ClientReceive.Welcome },
             {(int)ServerPackets.spawnPlayer, ClientReceive.SpawnPlayer },
             {(int)ServerPackets.playerPosition, ClientReceive.PlayerPosition },

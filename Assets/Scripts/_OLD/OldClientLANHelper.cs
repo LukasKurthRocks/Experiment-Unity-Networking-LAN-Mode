@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -9,7 +10,8 @@ using UnityEngine;
 // TODO: Singleton might be needed, as I need to "move" the LAN testing in here. For the rest I can use the ClientConnector.
 // Just creating the "ping instance" in here!?
 
-public class ClientLANHelper : Singleton<ClientLANHelper> {
+[Obsolete("The OLD Client LAN helper is obsolete.", true)]
+public class OldClientLANHelper : Singleton<OldClientLANHelper> {
     // Addresses of the computer (Ethernet, WiFi, etc.)
     public List<string> _localAddresses { get; private set; }
     public List<string> _localSubAddresses { get; private set; }
@@ -25,7 +27,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
     private EndPoint _remoteEndPoint;
 
     // TODO: No Instance? Check for this init. ...
-    public ClientLANHelper() {
+    public OldClientLANHelper() {
         _addresses = new List<string>();
         _localAddresses = new List<string>();
         _localSubAddresses = new List<string>();
@@ -63,7 +65,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                     // TODO: Not passing _socketClient and destinationEndPoint
                     //ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
-                    ClientSend.SendPing();
+                    //ClientSend.SendPing();
 
                     _percentSearching = index / countMax;
 

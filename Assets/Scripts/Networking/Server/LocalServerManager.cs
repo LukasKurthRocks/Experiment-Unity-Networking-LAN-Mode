@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// TODO: Rename when done... "LANManager"
-
-public class NewLANManager : Singleton<NewLANManager> {
+public class LocalServerManager : Singleton<LocalServerManager> {
     [Header("Preferences")]
     [SerializeField]
     private bool _isStarted = false;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,15 +22,13 @@ public class LANUIManager : MonoBehaviour {
 
     private bool _isLoading = false;
 
+    // Creating an instance of the LANHelper.
     private ClientLocalConnectionHelper LANHelperInstance = null;
 
-    // Start is called before the first frame update
     void Start() {
         _port.text = NetworkingConstants.STD_SERVER_PORT.ToString();
         _port.interactable = false;
 
-        //LanManager.Instance.ScanHost();
-        //ClientLANHelper.Instance.ScanHost();
         LANHelperInstance = ClientLocalConnectionHelper.Instance;
 
         //_port.interactable = true;
@@ -67,26 +66,25 @@ public class LANUIManager : MonoBehaviour {
     }
 
     public void StartServer() {
-        Debug.Log("Start Server");
-        // LanManager.Instance.StartServer(NetworkingConstants.STD_SERVER_PORT);
-        //NetworkManager.Instance.DoStart();
-        NewLANManager.Instance.StartServer();
+        Debug.Log("UI::StopServer(): Server started.");
+        LocalServerManager.Instance.StartServer();
+
         _startServerButton.interactable = false;
         _stopServerButton.interactable = true;
         _startClientButton.interactable = false;
     }
     public void StopServer() {
-        //LanManager.Instance.CloseServer();
-        //NetworkManager.Instance.CloseServer();
-        NewLANManager.Instance.StopServer();
+        Debug.Log("UI::StopServer(): Server stopped.");
+        LocalServerManager.Instance.StopServer();
+
         _startServerButton.interactable = true;
         _stopServerButton.interactable = false;
         _startClientButton.interactable = true;
     }
+
     public void StartClient() {
-        // NetworkingConstants.STD_SERVER_PORT
-        //LanManager.Instance.StartClient(55555);
-        ClientConnector.Instance.CreateShortInstance(55555);
+        //throw new NotImplementedException();
+        ClientConnector.Instance.ConnectToServer();
 
         _startClientButton.interactable = false;
         _stopClientButton.interactable = true;
@@ -95,7 +93,7 @@ public class LANUIManager : MonoBehaviour {
         _startPingButton.interactable = true;
     }
     public void StopClient() {
-        //LanManager.Instance.CloseClient();
+        //throw new NotImplementedException();
         ClientConnector.Instance.Disconnect();
 
         _startClientButton.interactable = true;
@@ -116,23 +114,12 @@ public class LANUIManager : MonoBehaviour {
         LANHelperInstance.StartClient(55555);
         LANHelperInstance.ScanHost();
 
-
         // ATTENTION: Coroutines tend to block the main thread.
         Debug.Log("About to start coroutine SendPing with port " + NetworkingConstants.STD_SERVER_PORT);
         StartCoroutine(LANHelperInstance.SendPing(NetworkingConstants.STD_SERVER_PORT, allowLocalAddress: true));
 
         // TODO: Create a list or something...
         //PrintResults();
-
-        /*
-        Debug.Log("Starting ping coroutine ...");
-        //StartCoroutine(LanManager.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
-        StartCoroutine(ClientLANHelper.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
-
-        _startPingButton.interactable = false;
-        _percentSlider.SetActive(true);
-        _isLoading = true;
-        */
     }
 
     public void PrintResults() {
@@ -143,14 +130,5 @@ public class LANUIManager : MonoBehaviour {
         } else {
             Debug.LogWarning("Result::NoAddressFound");
         }
-        /*
-        if (LanManager.Instance._addresses.Count > 0) {
-            foreach (string address in LanManager.Instance._addresses) {
-                Debug.Log($"Result::FoundAddress: {address}");
-            }
-        } else {
-            Debug.LogWarning("Result::NoAddressFound");
-        }
-        */
     }
 }
