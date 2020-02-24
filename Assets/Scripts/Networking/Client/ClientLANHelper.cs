@@ -6,7 +6,8 @@ using System.Text;
 using UnityEngine;
 
 // Functionality only in LAN mode ...
-// TODO: Check if singleton needed ...
+// TODO: Singleton might be needed, as I need to "move" the LAN testing in here. For the rest I can use the ClientConnector.
+// Just creating the "ping instance" in here!?
 
 public class ClientLANHelper : Singleton<ClientLANHelper> {
     // Addresses of the computer (Ethernet, WiFi, etc.)

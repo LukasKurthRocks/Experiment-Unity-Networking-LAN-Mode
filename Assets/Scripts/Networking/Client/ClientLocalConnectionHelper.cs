@@ -10,7 +10,12 @@ using System.Net.NetworkInformation;
 // https://stackoverflow.com/questions/37951902/how-to-get-ip-addresses-of-all-devices-in-local-network-with-unity-unet-in-c
 // https://forum.unity.com/threads/c-detecting-connected-devices-through-lan.297115/
 
-public class LanManager : Singleton<LanManager> {
+// TODO: Rename this into ClienLANHelper
+
+public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper> {
+    // BufferSize for handling packets
+    public static int dataBufferSize = 4096;
+
     // Addresses of the computer (Ethernet, WiFi, etc.)
     public List<string> _localAddresses { get; private set; }
     public List<string> _localSubAddresses { get; private set; }
@@ -26,10 +31,22 @@ public class LanManager : Singleton<LanManager> {
 
     private EndPoint _remoteEndPoint;
 
-    public LanManager() {
+    // TODO: Ensure you can only ping if no connection set yet...
+    // In local I might be my own server.
+    private bool _suppressLocalAddress = false;
+
+    // Implementing Packets-Handling
+    private static Packet _receivedData; // Handling data
+    private static byte[] _receiveBuffer;
+
+    public ClientLocalConnectionHelper() {
         _addresses = new List<string>();
         _localAddresses = new List<string>();
         _localSubAddresses = new List<string>();
+        
+        // Handling data
+        _receivedData = new Packet();
+        _receiveBuffer = new byte[dataBufferSize];
     }
 
     #region Starting/Stopping server
@@ -86,8 +103,7 @@ public class LanManager : Singleton<LanManager> {
 
                 _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-                _socketClient.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None,
-                                         ref _remoteEndPoint, new AsyncCallback(_ReceiveClient), null);
+                _socketClient.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(_ReceiveClient), null);
             } catch (Exception ex) {
                 Debug.Log(ex.Message);
             }
@@ -105,10 +121,16 @@ public class LanManager : Singleton<LanManager> {
     }
     #endregion
 
-    public IEnumerator SendPing(int port) {
-        _addresses.Clear();
+    public IEnumerator SendPing(int port, bool allowLocalAddress = false) {
+        _suppressLocalAddress = allowLocalAddress;
+
+        Debug.Log("Ping::(): Started coroutine");
+
+        _addresses.Clear(); 
 
         if (_socketClient != null) {
+            Debug.Log("socket != null");
+
             int maxSend = 4;
             float countMax = (maxSend * _localSubAddresses.Count) - 1;
 
@@ -118,15 +140,22 @@ public class LanManager : Singleton<LanManager> {
 
             // Send several pings just to be sure (a ping can be lost!)
             for (int i = 0; i < maxSend; i++) {
-                //Debug.Log($"Ping {i+1}/{maxSend}");
+                Debug.Log($"Ping {i+1}/{maxSend}");
 
                 // For each address that this device has
                 foreach (string subAddress in _localSubAddresses) {
                     IPEndPoint destinationEndPoint = new IPEndPoint(IPAddress.Parse(subAddress + ".255"), port);
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
-                    // TODO: Not passing _socketClient and destinationEndPoint
-                    ClientSend.SendPing(ref _socketClient, ref destinationEndPoint);
+                    // Have to create a normal packet here as the udp send needs
+                    // the UDP already set. Not messing around with that yet.
+                    using (Packet _packet = new Packet((int)ClientPackets.ping)) {
+                        // Write a message to the server. Is not needed though.
+                        _packet.Write("ping");
+
+                        _packet.WriteLength();
+                        _socketClient.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, destinationEndPoint);
+                    }
 
                     _percentSearching = index / countMax;
 
@@ -136,6 +165,8 @@ public class LanManager : Singleton<LanManager> {
                 }
             }
             _isSearching = false;
+        } else {
+            Debug.LogError("socket == null");
         }
     }
 
@@ -160,7 +191,82 @@ public class LanManager : Singleton<LanManager> {
     private void _ReceiveClient(IAsyncResult ar) {
         if (_socketClient != null) {
             try {
+                //
+                // Starting Packet Handling
+                //
                 int size = _socketClient.EndReceiveFrom(ar, ref _remoteEndPoint);
+
+                if (size <= 0) {
+                    // There should not be an empty packet.
+                    Debug.Log("Client received empty packet. Closing connection...");
+                    CloseClient();
+                    return;
+                }
+
+                // Having data, copying bytes into array
+                byte[] _data = new byte[size];
+                Array.Copy(sourceArray: _receiveBuffer, destinationArray: _data, length: size);
+                
+                // int = 4, no more data...
+                if (_data.Length < 4) {
+                    Debug.Log("_data.Length < 4");
+                    CloseClient();
+                    return;
+                }
+
+                int _packetLength = 0;
+                
+                // Setting packet data
+                _receivedData.SetBytes(_data);
+
+                // int has 4 bytes
+                if (_receivedData.UnreadLength() >= 4) {
+                    Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4");
+                    _packetLength = _receivedData.ReadInt();
+                    Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}");
+                    if (_packetLength <= 0) {
+                        _receivedData.Reset();
+                        //return;
+                    }
+                }
+                
+                // as long as we get data...
+                while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
+                    Debug.Log("LocalServer::HandleData(): While having data ...");
+                    byte[] _packetBytes = _receivedData.ReadBytes(_packetLength);
+
+                    // Here is where the server packet is getting unwrapped.
+                    // Normally handled by a "ServerHandle" class, but this is just ping/pong.
+                    using (Packet _packet = new Packet(_packetBytes)) {
+                        // has to be in the same order as the client is sending it.
+                        int _packetId = _packet.ReadInt();
+                        string _packetMessage = _packet.ReadString();
+
+                        Debug.Log("" + _packetId + " msg: " + _packetMessage);
+                    }
+                    Debug.Log("LocalServer::HandleData(): After packet.");
+
+                    _packetLength = 0;
+
+                    // int has 4 bytes
+                    if (_receivedData.UnreadLength() >= 4) {
+                        Debug.Log("_receivedData.UnreadLength() >= 4: " + _receivedData.UnreadLength());
+                        _packetLength = _receivedData.ReadInt();
+                        if (_packetLength <= 0) {
+                            Debug.Log("_packetLength <= 0: " + _packetLength);
+                            _receivedData.Reset();
+                        }
+                    }
+                }
+                // return the received data
+                if (_packetLength <= 1) {
+                    Debug.Log("_packetLength <= 1: " + _packetLength);
+                    _receivedData.Reset();
+                }
+                //
+                // Ending Packet Handling
+                //
+
                 string address = _remoteEndPoint.ToString().Split(':')[0];
 
                 // This is not ourself and we do not already have this address
@@ -168,9 +274,13 @@ public class LanManager : Singleton<LanManager> {
                     _addresses.Add(address);
                 }
 
-                // Just in case someone asking why local server not found.
-                if (_localAddresses.Contains(address))
+                // Might add the local server, especially for testing.
+                if (_localAddresses.Contains(address) && !_addresses.Contains(address) && _suppressLocalAddress) {
+                    Debug.LogWarning("Adding local server with ip: " + address);
+                    _addresses.Add(address);
+                } else if (_localAddresses.Contains(address)) {
                     Debug.LogWarning("Server is local: " + address);
+                }
 
                 _socketClient.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(_ReceiveClient), null);
             } catch (Exception ex) {
@@ -181,7 +291,7 @@ public class LanManager : Singleton<LanManager> {
 
     /// <summary>Adding local ip addresses - from current host - to dictionary.</summary>
     public void ScanHost() {
-        Debug.Log("LANManager::ScanHost(): Scanning host for local addresses ...");
+        Debug.Log("ClientLocalConnectionHelper::ScanHost(): Scanning host for local addresses ...");
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
         foreach (IPAddress ip in host.AddressList) {
@@ -189,7 +299,7 @@ public class LanManager : Singleton<LanManager> {
                 string address = ip.ToString();
                 string subAddress = address.Remove(address.LastIndexOf('.'));
 
-                Debug.Log("LANManager::ScanHost(): IP: " + address);
+                Debug.Log("ClientLocalConnectionHelper::ScanHost(): IP: " + address);
                 _localAddresses.Add(address);
 
                 if (!_localSubAddresses.Contains(subAddress)) {

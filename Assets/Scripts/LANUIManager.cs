@@ -21,13 +21,16 @@ public class LANUIManager : MonoBehaviour {
 
     private bool _isLoading = false;
 
+    private ClientLocalConnectionHelper LANHelperInstance = null;
+
     // Start is called before the first frame update
     void Start() {
         _port.text = NetworkingConstants.STD_SERVER_PORT.ToString();
         _port.interactable = false;
 
         //LanManager.Instance.ScanHost();
-        ClientLANHelper.Instance.ScanHost();
+        //ClientLANHelper.Instance.ScanHost();
+        LANHelperInstance = ClientLocalConnectionHelper.Instance;
 
         //_port.interactable = true;
 
@@ -36,7 +39,7 @@ public class LANUIManager : MonoBehaviour {
         _startClientButton.interactable = true;
         _stopClientButton.interactable = false;
 
-        _startPingButton.interactable = false;
+        //_startPingButton.interactable = false;
 
         _percentSlider.SetActive(false);
         _percentSlider.GetComponent<Slider>().value = 0;
@@ -44,15 +47,23 @@ public class LANUIManager : MonoBehaviour {
 
     void Update() {
         if (_isLoading) {
-            float progress = LanManager.Instance._percentSearching;
+            float progress = LANHelperInstance._percentSearching;
             _percentSlider.GetComponent<Slider>().value = progress;
 
-            if (!LanManager.Instance._isSearching) {
+            if (!LANHelperInstance._isSearching) {
                 _startPingButton.interactable = true;
                 _percentSlider.SetActive(false);
                 _isLoading = false;
+
+                LANHelperInstance.CloseClient();
             }
         }
+    }
+
+    private void OnApplicationQuit() {
+        // TODO: Move where it belongs
+        LANHelperInstance.CloseClient();
+        LANHelperInstance.CloseServer();
     }
 
     public void StartServer() {
@@ -95,16 +106,44 @@ public class LANUIManager : MonoBehaviour {
     }
 
     public void StartPing() {
-        Debug.Log("Starting ping corountine ...");
+        Debug.Log("Ping(): has been started...");
+
+        _startPingButton.interactable = false;
+        _percentSlider.SetActive(true);
+        _isLoading = true;
+
+        // TODO: Deactivate all controls? Not messing with LAN scripting in here.
+        LANHelperInstance.StartClient(55555);
+        LANHelperInstance.ScanHost();
+
+
+        // ATTENTION: Coroutines tend to block the main thread.
+        Debug.Log("About to start coroutine SendPing with port " + NetworkingConstants.STD_SERVER_PORT);
+        StartCoroutine(LANHelperInstance.SendPing(NetworkingConstants.STD_SERVER_PORT, allowLocalAddress: true));
+
+        // TODO: Create a list or something...
+        //PrintResults();
+
+        /*
+        Debug.Log("Starting ping coroutine ...");
         //StartCoroutine(LanManager.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
         StartCoroutine(ClientLANHelper.Instance.SendPing(NetworkingConstants.STD_SERVER_PORT));
 
         _startPingButton.interactable = false;
         _percentSlider.SetActive(true);
         _isLoading = true;
+        */
     }
 
     public void PrintResults() {
+        if (LANHelperInstance._addresses.Count > 0) {
+            foreach (string address in LANHelperInstance._addresses) {
+                Debug.Log($"Result::FoundAddress: {address}");
+            }
+        } else {
+            Debug.LogWarning("Result::NoAddressFound");
+        }
+        /*
         if (LanManager.Instance._addresses.Count > 0) {
             foreach (string address in LanManager.Instance._addresses) {
                 Debug.Log($"Result::FoundAddress: {address}");
@@ -112,5 +151,6 @@ public class LANUIManager : MonoBehaviour {
         } else {
             Debug.LogWarning("Result::NoAddressFound");
         }
+        */
     }
 }

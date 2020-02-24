@@ -211,7 +211,7 @@ public class ClientConnector : Singleton<ClientConnector> {
             }
         }
         
-        // LAN
+        // TODO: Test if this can work in LAN or remove this.
         public void SendDataWithoutID(Packet _packet) {
             try {
                 if (socket != null) {
