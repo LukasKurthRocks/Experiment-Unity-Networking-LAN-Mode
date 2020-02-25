@@ -34,12 +34,13 @@ public class LocalServerManager : Singleton<LocalServerManager> {
 
         //Server.Start(50, 26950);
         _isStarted = true;
-        LocalServer.Start(NetworkingConstants.STD_MAX_PLAYERS, NetworkingConstants.STD_SERVER_PORT);
+        //LocalPingServer.Start(NetworkingConstants.STD_MAX_PLAYERS, NetworkingConstants.STD_SERVER_PORT);
+        LocalPingServer.Start(NetworkingConstants.STD_SERVER_PORT);
     }
 
     public void StopServer() {
         _isStarted = false;
-        LocalServer.Stop();
+        LocalPingServer.Stop();
     }
 
     /// <summary>Checking server for headless mode</summary>

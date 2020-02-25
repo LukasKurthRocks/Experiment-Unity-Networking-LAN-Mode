@@ -23,13 +23,13 @@ public class LANUIManager : MonoBehaviour {
     private bool _isLoading = false;
 
     // Creating an instance of the LANHelper.
-    private ClientLocalConnectionHelper LANHelperInstance = null;
+    private ClienLANHelper LANHelperInstance = null;
 
     void Start() {
         _port.text = NetworkingConstants.STD_SERVER_PORT.ToString();
         _port.interactable = false;
 
-        LANHelperInstance = ClientLocalConnectionHelper.Instance;
+        LANHelperInstance = ClienLANHelper.Instance;
 
         //_port.interactable = true;
 

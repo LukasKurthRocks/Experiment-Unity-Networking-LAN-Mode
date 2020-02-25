@@ -10,9 +10,7 @@ using System.Net.NetworkInformation;
 // https://stackoverflow.com/questions/37951902/how-to-get-ip-addresses-of-all-devices-in-local-network-with-unity-unet-in-c
 // https://forum.unity.com/threads/c-detecting-connected-devices-through-lan.297115/
 
-// TODO: Rename this into ClienLANHelper
-
-public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper> {
+public class ClienLANHelper : Singleton<ClienLANHelper> {
     // BufferSize for handling packets
     public static int dataBufferSize = 4096;
 
@@ -39,11 +37,11 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
     private static Packet _receivedData; // Handling data
     private static byte[] _receiveBuffer;
 
-    public ClientLocalConnectionHelper() {
+    public ClienLANHelper() {
         _addresses = new List<string>();
         _localAddresses = new List<string>();
         _localSubAddresses = new List<string>();
-        
+
         // Handling data
         _receivedData = new Packet();
         _receiveBuffer = new byte[dataBufferSize];
@@ -126,7 +124,7 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
 
         Debug.Log("Ping::(): Started coroutine");
 
-        _addresses.Clear(); 
+        _addresses.Clear();
 
         if (_socketClient != null) {
             Debug.Log("socket != null");
@@ -140,7 +138,7 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
 
             // Send several pings just to be sure (a ping can be lost!)
             for (int i = 0; i < maxSend; i++) {
-                Debug.Log($"Ping {i+1}/{maxSend}");
+                Debug.Log($"Ping {i + 1}/{maxSend}");
 
                 // For each address that this device has
                 foreach (string subAddress in _localSubAddresses) {
@@ -206,7 +204,7 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
                 // Having data, copying bytes into array
                 byte[] _data = new byte[size];
                 Array.Copy(sourceArray: _receiveBuffer, destinationArray: _data, length: size);
-                
+
                 // int = 4, no more data...
                 if (_data.Length < 4) {
                     Debug.Log("_data.Length < 4");
@@ -215,7 +213,7 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
                 }
 
                 int _packetLength = 0;
-                
+
                 // Setting packet data
                 _receivedData.SetBytes(_data);
 
@@ -229,7 +227,7 @@ public class ClientLocalConnectionHelper : Singleton<ClientLocalConnectionHelper
                         //return;
                     }
                 }
-                
+
                 // as long as we get data...
                 while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
                     Debug.Log("LocalServer::HandleData(): While having data ...");
