@@ -39,7 +39,7 @@ public class LocalPingServer {
 
         if (_socketServer == null) {
             try {
-                // TODO. Find out which is better: new UdpClient(Port);
+                // TODO. Find out which is better: this or "new UdpClient(Port);"!?
                 _socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
                 if (_socketServer == null) {
@@ -49,7 +49,6 @@ public class LocalPingServer {
 
                 // Check if we received pings
                 IPEndPoint _serverEndPoint = new IPEndPoint(IPAddress.Any, Port);
-                //Debug.Log($"IPE: {_serverEndPoint.Address}"); // TODO: Remove
 
                 _socketServer.Bind(new IPEndPoint(IPAddress.Any, Port));
 
@@ -62,7 +61,6 @@ public class LocalPingServer {
                 Debug.Log(ex.Message);
             }
 
-            //Debug.Log($"LocalServer::Start(): {_socketServer.LocalEndPoint}, {_socketServer.RemoteEndPoint}, {_socketServer}"); //TODO: REMOVE
             Debug.Log($"LANServer::Start(): Started server on port {Port}");
         }
     }
@@ -75,7 +73,7 @@ public class LocalPingServer {
                 _socketServer.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(ServerReceiveCallback), null);
 
                 if (size <= 0) {
-                    // TODO: Disconnecting client/player?
+                    // On Server: Disconnect, On PingServer: Ignore!
                     return;
                 }
 
@@ -85,8 +83,7 @@ public class LocalPingServer {
 
                 // int = 4, no more data...
                 if (_data.Length < 4) {
-                    // TODO: Disconnecting client!?
-                    //Instance.Disconnect();
+                    // On Server: Disconnect, On PingServer: Ignore!
                     return;
                 }
 
@@ -99,16 +96,14 @@ public class LocalPingServer {
     }
 
     private static bool HandleData(byte[] _data) {
-        //Debug.Log("LocalServer::HandleData(): Called ..."); //TODO: Remove
         int _packetLength = 0;
 
         _receivedData.SetBytes(_data);
 
         // int has 4 bytes
         if (_receivedData.UnreadLength() >= 4) {
-            //Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4"); //TODO: Remove
             _packetLength = _receivedData.ReadInt();
-            //Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}"); //TODO: Remove
+
             if (_packetLength <= 0) {
                 return true;
             }
@@ -125,7 +120,6 @@ public class LocalPingServer {
                 //packetHandlers[_packetId](ref _remoteEndPoint, ref _socketServer, _packet);
                 packetHandlers[_packetId](_remoteEndPoint.ToString(), _packet);
             }
-            // Debug.Log("LocalServer::HandleData(): After packet."); //TODO: Remove
 
             _packetLength = 0;
 
@@ -183,6 +177,7 @@ public class LocalPingServer {
     }
 
     // TODO: Not only close the server in here.
+    // Can not even close this in here because NOT MONOBEHAVIOUR!
     private void OnApplicationQuit() {
         Stop();
     }

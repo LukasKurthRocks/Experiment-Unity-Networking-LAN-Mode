@@ -8,6 +8,7 @@ using UnityEngine;
 public class LocalServer {
     public static int MaxPlayers { get; private set; }
     public static int Port { get; private set; }
+
     public static Dictionary<int, ServerClientConnector> clients = new Dictionary<int, ServerClientConnector>();
     public delegate void PacketHandler(int _fromClient, Packet _packet);
     public static Dictionary<int, PacketHandler> packetHandlers;
@@ -118,6 +119,18 @@ public class LocalServer {
         }
     }
 
+    /*
+     * INFO for (not only) me:
+     * Searched some time later WHERE IN HELL the packet handler is called.
+     * So quick guide in this comment:
+     * Receiving inside UDPReceiveCallback
+     *   => Server.clients[_clientID].UDP.HandleData(_data) (Client/ServerClientConnector.UDP.HandleData())
+     *   => LocalServer.packetHandlers[_packetId](_id, _packet);
+     * In words: Server getting the UDP Callback, calling the client for handling udp data,
+     *   client then calling the servers packetHandler dictionary ...
+     *   
+     * Unfortunately this can not be used for ping, as this would require an existing UDP connection!!
+     */
     private static void InitializeServerData() {
         for (int i = 1; i <= MaxPlayers; i++) {
             clients.Add(i, new ServerClientConnector(i));

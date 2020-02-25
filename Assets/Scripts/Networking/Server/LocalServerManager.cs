@@ -10,7 +10,10 @@ public class LocalServerManager : Singleton<LocalServerManager> {
 
     // Start is called before the first frame update
     void Start() {
-        // Checking for prefabs and headless mode (but not in client)
+        if(IsHeadlessMode()) {
+            // TODO: Do this.
+            Debug.Log("LocalServerManager::Start(): Still nothing todo when headless (poor me). Shouldn't I check for master client prefab or starting the headless erver?");
+        }
     }
 
     /// <summary>Closing unity's still open sockets...</summary>
@@ -32,10 +35,16 @@ public class LocalServerManager : Singleton<LocalServerManager> {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
 
-        //Server.Start(50, 26950);
         _isStarted = true;
+
+        /*
+         * Also quick note here: Needed to check if there is a way I can call the SendPing() via the LocalServer class.
+         * Unfortunately this is not possible, as I would have to have an existing client connection.
+         * So i might have to create the ping socket on another port ...
+         */
         //LocalPingServer.Start(NetworkingConstants.STD_MAX_PLAYERS, NetworkingConstants.STD_SERVER_PORT);
-        LocalPingServer.Start(NetworkingConstants.STD_SERVER_PORT);
+        //LocalPingServer.Start(NetworkingConstants.STD_SERVER_PORT);
+        LocalPingServer.Start(26951);
     }
 
     public void StopServer() {

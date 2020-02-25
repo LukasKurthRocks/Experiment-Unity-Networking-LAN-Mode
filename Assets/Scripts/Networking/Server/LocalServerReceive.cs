@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 public class LocalServerReceive {
     #region Packets
     // TODO: Remove or Keep?
@@ -26,6 +25,16 @@ public class LocalServerReceive {
     // TODO: Remove or Keep?
     public static void Ping(string _remoteEndPoint, Packet _packet) {
         Debug.Log($"LocalServerReceive::Ping(): Ping received from '{_remoteEndPoint}'. Sending pong ...");
+
+        if (_packet == null)
+            Debug.Log("Received empty ping packet.");
+
+        LocalServerSend.SendPong();
+    }
+
+    // TODO: Remove or Keep?
+    public static void Ping(int _fromClient, Packet _packet) {
+        Debug.Log($"LocalServerReceive::Ping(): Ping received. Sending pong ...");
 
         if (_packet == null)
             Debug.Log("Received empty ping packet.");
@@ -80,6 +89,9 @@ public class LocalServerReceive {
         Debug.Log("TODO: Set player input. Maybe set an interface here?");
         // Setting player input when received, so server side player clone moves along.
         //LocalServer.clients[_fromClient].player.GetComponent<PlayerController>().SetPlayerInput(_inputs, _rotation);
+
+        // TODO: Test if this can be used!!
+        //LocalServer.clients[_fromClient].player.GetComponent<IPlayerController>().SetPlayerInput(_inputs, _rotation);
     }
     #endregion
 }
