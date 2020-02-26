@@ -10,7 +10,7 @@ using System.Net.NetworkInformation;
 // https://stackoverflow.com/questions/37951902/how-to-get-ip-addresses-of-all-devices-in-local-network-with-unity-unet-in-c
 // https://forum.unity.com/threads/c-detecting-connected-devices-through-lan.297115/
 
-public class ClienLANHelper : Singleton<ClienLANHelper> {
+public class ClientLANHelper : Singleton<ClientLANHelper> {
     // BufferSize for handling packets
     public static int dataBufferSize = 4096;
 
@@ -37,7 +37,7 @@ public class ClienLANHelper : Singleton<ClienLANHelper> {
     private static Packet _receivedData; // Handling data
     private static byte[] _receiveBuffer;
 
-    public ClienLANHelper() {
+    public ClientLANHelper() {
         _addresses = new List<string>();
         _localAddresses = new List<string>();
         _localSubAddresses = new List<string>();
