@@ -147,6 +147,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                     // Have to create a normal packet here as the udp send needs
                     // the UDP already set. Not messing around with that yet.
+                    // TODO: Might send PlayerID == 0, server starts at 1, so this could be other packets!?
                     using (Packet _packet = new Packet((int)ClientPackets.ping)) {
                         // Write a message to the server. Is not needed though.
                         _packet.Write("ping");

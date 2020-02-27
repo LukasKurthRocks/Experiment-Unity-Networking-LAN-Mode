@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,40 +7,42 @@ using UnityEngine.UI;
 public class UIManager : Singleton<UIManager> {
     [Header("Input Fields")]
     [SerializeField]
-    private InputField _port;
+    private InputField _port = null;
     [SerializeField]
-    private InputField _username; // TODO: Still have to save this somewhere
+    private InputField _username = null; // TODO: Still have to save this somewhere
 
     // For controlling the button state
     [SerializeField]
-    private Button _localServerSearchButton;
+    private Button _localServerSearchButton = null;
     [SerializeField]
-    private Button _loginConnectButton;
+    private Button _loginConnectButton = null;
     [SerializeField]
-    private Button _disconnectButton;
+    private Button _disconnectButton = null;
     [SerializeField]
-    private Button _quitButton;
+    private Button _quitButton = null;
     [SerializeField]
-    private Button _startPingServer; // TODO: Maybe just the headless version?
+    private Button _startPingServer = null; // TODO: Maybe just the headless version?
     [SerializeField]
-    private Button _startHostServer;
+    private Button _startHostServer = null;
     [SerializeField]
-    private Button _stopPingServer; // TODO: Maybe just the headless version?
+    private Button _stopPingServer = null; // TODO: Maybe just the headless version?
     [SerializeField]
-    private Button _stopHostServer;
+    private Button _stopHostServer = null;
     [SerializeField]
-    private Dropdown _serverListDropdown;
+    private Dropdown _serverListDropdown = null;
     [SerializeField]
-    private Slider _percentSlider;
+    private Slider _percentSlider = null;
     [SerializeField]
-    private GameObject _menuPanel;
+    private GameObject _menuPanel = null;
     [SerializeField]
-    private GameObject _statusPanel;
+    private GameObject _statusPanel = null;
 
     private bool _isLoading = false;
 
     // Creating an instance of the LANHelper
     private ClientLANHelper LANHelperInstance = null;
+
+    string[] _excludeGameobjectNames = new string[] { "PortField" };
 
     void Start() {
         LANHelperInstance = ClientLANHelper.Instance;
@@ -70,6 +73,10 @@ public class UIManager : Singleton<UIManager> {
             Debug.LogWarning("UIManager::Start(): _stopPingServer button not assigned.");
         if (_stopHostServer == null)
             Debug.LogWarning("UIManager::Start(): _stoptHostServer button not assigned.");
+        if (_menuPanel == null)
+            Debug.LogWarning("UIManager::Start(): _menuPanel not assigned.");
+        if (_statusPanel == null)
+            Debug.LogWarning("UIManager::Start(): _statusPanel not assigned.");
 
         if (_port != null)
             _port.text = NetworkingConstants.STD_SERVER_PORT.ToString();
@@ -122,7 +129,12 @@ public class UIManager : Singleton<UIManager> {
     /// <summary>Disabling the interactive controls of the menu. There might be a better way, but this works!</summary>
     private void DisableMenuItems(bool disable = true) {
         foreach(Transform child in _menuPanel.gameObject.transform) {
-            // is there a better way for this?
+            // some options need to stay de-/activated, so skipping those.
+            if (Array.Exists(_excludeGameobjectNames, e => e == child.gameObject.name))
+                continue;
+
+            // disabling all known menu types.
+            // tell me if there is another way for this.
             if(child.gameObject.GetComponent<Button>() != null)
                 child.gameObject.GetComponent<Button>().interactable = !disable;
             if (child.gameObject.GetComponent<Dropdown>() != null)
@@ -134,7 +146,12 @@ public class UIManager : Singleton<UIManager> {
 
     public void StartServer() {
         Debug.Log("UI::StartServer(): Server started.");
+        
+        // Starting "PingServer" and "GameServer" same time.
         LocalServerManager.Instance.StartServer();
+        
+        //LocalPingServer.Start(26951);
+        //LocalServer.Start(2, 26950);
 
         DisableMenuItems();
         _startHostServer.gameObject.SetActive(false);
@@ -143,7 +160,12 @@ public class UIManager : Singleton<UIManager> {
     }
     public void StopServer() {
         Debug.Log("UI::StopServer(): Server stopped.");
+
+        // Stopping Ping and GameServer.
         LocalServerManager.Instance.StopServer();
+        
+        // LocalPingServer.Stop();
+        //LocalServer.Stop();
 
         DisableMenuItems(false);
         _startHostServer.gameObject.SetActive(true);
@@ -187,7 +209,7 @@ public class UIManager : Singleton<UIManager> {
 
         // Watch the coroutines. While loops might block the whole system.
         Debug.Log("UIManager::StartPing(): About to start coroutine SendPing with port " + NetworkingConstants.STD_SERVER_PORT);
-        StartCoroutine(LANHelperInstance.SendPing(NetworkingConstants.STD_SERVER_PORT, allowLocalAddress: true));
+        StartCoroutine(LANHelperInstance.SendPing(26951, allowLocalAddress: true));
     }
 
     public void QuitGame() {

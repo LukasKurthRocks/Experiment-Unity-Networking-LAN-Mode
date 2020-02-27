@@ -50,7 +50,7 @@ public class LocalServer {
         _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
         Debug.Log($"Server::TCPConnectCallback(): Incoming connection from {_client.Client.RemoteEndPoint}...");
-        
+
         for (int i = 1; i <= MaxPlayers; i++) {
             if (clients[i].tcp.socket == null) {
                 clients[i].tcp.Connect(_client);
@@ -69,6 +69,11 @@ public class LocalServer {
             // "Dont miss any incoming data"
             _udpListener.BeginReceive(UDPReceiveCallback, null);
 
+            // We could ask the udp packet types in here i guess ...
+            // TODO: Check if I SHOULD do this, as this would combine both servers.
+            // Maybe just leaving as it is?
+            // Comparing PacketID, PlayerID, STRING, LENGTH (WelcomeReceived) to PacketID, STRING, LENGTH (LanHelper=>Ping())
+
             // int = 4, no more data...
             if (_data.Length < 4) {
                 return;
@@ -85,6 +90,13 @@ public class LocalServer {
                 }
 
                 Debug.Log("received client id: " + _clientId);
+
+                // This should normally be reached via MaxPlayer count in tcp.
+                // No client should send data via udp if not connected. But it MIGHT BE happening.
+                if(clients.Count < _clientId) {
+                    Debug.LogError($"Server::UDPReceiveCallback(): There is no client available for playerID '{_clientId}' when players dictionary count is '{clients.Count}'.");
+                    return;
+                }
 
                 // Creating a new connection.
                 // empty packet that open the clients port.

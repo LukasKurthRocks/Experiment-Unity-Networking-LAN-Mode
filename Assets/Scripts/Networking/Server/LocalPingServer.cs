@@ -25,7 +25,7 @@ public class LocalPingServer {
     private static byte[] _receiveBuffer;
 
     // TODO: Using this somewhere.
-    private static bool _isStarted = false;
+    //private static bool _isStarted = false;
 
     public static void Start(int _portNumber) {
         Port = _portNumber;
@@ -63,6 +63,8 @@ public class LocalPingServer {
 
             Debug.Log($"LANServer::Start(): Started server on port {Port}");
         }
+
+        //_isStarted = true;
     }
 
     private static void ServerReceiveCallback(IAsyncResult _asyncResult) {
@@ -148,6 +150,8 @@ public class LocalPingServer {
 
             Debug.Log("LANServer::CloseServer(): Closed socket on server.");
         }
+
+        //_isStarted = false;
     }
 
     // Sending packet back to the remote end point.
