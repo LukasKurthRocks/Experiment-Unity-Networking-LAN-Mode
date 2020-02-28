@@ -289,7 +289,7 @@ if(!$UnityLinkObjects) {
             Write-Verbose "Version $UnityVersion exists." -Verbose
             return
         } else {
-            Write-Host "Version '$UnityVersion' does not exist in array '$($UnityLinkObjects.UnityVersion -join ", ")'"
+            #Write-Host "Version '$UnityVersion' does not exist in array '$($UnityLinkObjects.UnityVersion -join ", ")'"
         }
 
         Write-Verbose "Adding version $UnityVersion" -Verbose
