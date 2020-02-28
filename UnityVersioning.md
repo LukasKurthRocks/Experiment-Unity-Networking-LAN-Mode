@@ -1,6 +1,11 @@
 # Unity Versionen
 
+### TODO
+* Muss noch die Links sortieren. Glaube bei 5.5 hat er mehrere für verschiedene Editor Varianten.
+
 ## Informationen
+Falls ich mal wieder eine andere Version brauche, aber keinen Link dazu finde:
+
 ### Allgemeines
 Ich kann nicht versprechen, dass auch alle Links funktionieren.
 Ich habe die mit PowerShell anhand des Hash-Wertes generieren lassen.
@@ -9,12 +14,10 @@ Unity Hub Links kann ich leider nicht einfügen. Markdown versteht die Links nic
 
 ## Tabelle mit Links
 
-Falls ich mal wieder eine andere Version brauche, aber keinen Link dazu finde:
-
 UnityVersion | HashValue | UnityHubLink | VersionLink
 ------------ | --------- | ------------ | ------------
 2019.3.3 | 7ceaae5f7503 | unityhub://2019.3.3/7ceaae5f7503 | [Whats new in Unity 2019.3.3](https://unity3d.com/unity/whats-new/2019.3.3)
-2019.3.2 | c46a3a38511e | unityhub://2019.3.2/c46a3a38511e | [Whats new in Unity 2019.3.2](https://unity3d.com/unity/whats-new/2019.3.2)
+|2019.3.2 | c46a3a38511e | unityhub://2019.3.2/c46a3a38511e | [Whats new in Unity 2019.3.2](https://unity3d.com/unity/whats-new/2019.3.2)
 2019.3.1 | 89d6087839c2 | unityhub://2019.3.1/89d6087839c2 | [Whats new in Unity 2019.3.1](https://unity3d.com/unity/whats-new/2019.3.1)
 2019.3.0 | 27ab2135bccf | unityhub://2019.3.0/27ab2135bccf | [Whats new in Unity 2019.3.0](https://unity3d.com/unity/whats-new/2019.3.0)
 2019.2.21 | 9d528d026557 | unityhub://2019.2.21/9d528d026557 | [Whats new in Unity 2019.2.21](https://unity3d.com/unity/whats-new/2019.2.21)
@@ -162,7 +165,7 @@ if(!$UnityLinkObjects) {
                 [PSCustomObject]@{
                     UnityVersion = $UnityVersion
                     VersionLink  = $UnityReleaseLink
-                    DownloadLink = $DownloadLinks.href -join ", "
+                    DownloadLink = ($DownloadLinks.href -join ", ")
                     HashValue = $HashValue
                     HubLink = $HubLink
                 }
@@ -170,11 +173,11 @@ if(!$UnityLinkObjects) {
         } else {
             # just in case I want to add something I do not add later...
             $OtherLinks += [PSCustomObject]@{
-                UnityVersion = [Version]$UnityVersion
+                UnityVersion = "$UnityVersion ##O"
                 VersionLink  = $UnityReleaseLink
                 DownloadLink = $DownloadLinks.href -join ", "
-                HashValue = $HashValue
-                HubLink = $HubLink
+                HashValue = "N/A"
+                HubLink = "N/A"
             }
         }
     }
@@ -215,7 +218,7 @@ if(!$UnityLinkObjects) {
             }
 
             [PSCustomObject]@{
-                UnityVersion = $UnityVersion
+                UnityVersion = "$UnityVersion ##N"
                 VersionLink  = $ChangeLogURI
                 DownloadLink = $DownloadLink
                 HashValue = $HashValue
@@ -265,12 +268,12 @@ if(!$UnityLinkObjects) {
                 $HashValue = $Matches[1]
                 $HubLink   = "unityhub://$UnityVersion/$HashValue"
             } else {
-                $HashValue = "Not Found"
+                $HashValue = "N/A"
                 $HubLink   = "N/A"
             }
 
             [PSCustomObject]@{
-                UnityVersion = $UnityVersion
+                UnityVersion = "$UnityVersion ##A"
                 VersionLink  = $ChangeLogURI
                 DownloadLink = $DownloadLink
                 HashValue = $HashValue
@@ -278,20 +281,20 @@ if(!$UnityLinkObjects) {
             }
         }
     }
-}
 
-# Adding what is left:
-$UnityLinkObjects += $OtherLinks | ForEach-Object {
-    $UnityVersion = $_.UnityVersion
-    if($UnityLinkObjects.UnityVersion -contains $UnityVersion) {
-        Write-Verbose "Version $UnityVersion exists." -Verbose
-        return
-    } else {
-        Write-Host "Version '$UnityVersion' does not exist in array '$($UnityLinkObjects.UnityVersion -join ", ")'"
+    # Adding what is left:
+    $UnityLinkObjects += $OtherLinks | ForEach-Object {
+        $UnityVersion = $_.UnityVersion
+        if($UnityLinkObjects.UnityVersion -contains $UnityVersion) {
+            Write-Verbose "Version $UnityVersion exists." -Verbose
+            return
+        } else {
+            Write-Host "Version '$UnityVersion' does not exist in array '$($UnityLinkObjects.UnityVersion -join ", ")'"
+        }
+
+        Write-Verbose "Adding version $UnityVersion" -Verbose
+        $_
     }
-
-    Write-Verbose "Adding version $UnityVersion" -Verbose
-    $_
 }
 
 $UnityLinkObjects | Sort-Object -Property UnityVersion -Descending | Select-Object -Property UnityVersion,HashValue,HubLink,VersionLink,DownloadLink -Unique | FT
