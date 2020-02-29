@@ -345,7 +345,7 @@ __2019.3.0a2__ | fa7740529556 | unityhub://2019.3.0a2/fa7740529556 | [Whats new 
 4.1 | N/A | N/A | [Whats new in Unity 4.1](https://unity3d.com/unity/whats-new/unity-4.1)
 4.0.1 | N/A | N/A | [Whats new in Unity 4.0.1](https://unity3d.com/unity/whats-new/unity-4.0.1)
 4.0 | N/A | N/A | [Whats new in Unity 4.0](https://unity3d.com/unity/whats-new/unity-4.0)
-3.5.7 | N/A | N/A | [Whats new in Unity 3.5.7](https://unity3d.com/unity/whats-new/unity-3.5.7)
+3.5.7 | 795a449bc926 | unityhub://3.5.7f6/795a449bc926 (NW!) | [Whats new in Unity 3.5.7](https://unity3d.com/unity/whats-new/unity-3.5.7)
 3.5.6 | N/A | N/A | [Whats new in Unity 3.5.6](https://unity3d.com/unity/whats-new/unity-3.5.6)
 3.5.5 | N/A | N/A | [Whats new in Unity 3.5.5](https://unity3d.com/unity/whats-new/unity-3.5.5)
 3.5.4 | N/A | N/A | [Whats new in Unity 3.5.4](https://unity3d.com/unity/whats-new/unity-3.5.4)
@@ -355,7 +355,7 @@ __2019.3.0a2__ | fa7740529556 | unityhub://2019.3.0a2/fa7740529556 | [Whats new 
 3.5 | N/A | N/A | [Whats new in Unity 3.5](https://unity3d.com/unity/whats-new/unity-3.5)
 3.4.2 | N/A | N/A | [Whats new in Unity 3.4.2](https://unity3d.com/unity/whats-new/unity-3.4.2)
 3.4.1 | N/A | N/A | [Whats new in Unity 3.4.1](https://unity3d.com/unity/whats-new/unity-3.4.1)
-3.4 | N/A | N/A | [Whats new in Unity 3.4](https://unity3d.com/unity/whats-new/unity-3.4)
+3.4.0 | fca068e21211 | unityhub://3.4.0f5/fca068e21211 (NW!) | [Whats new in Unity 3.4](https://unity3d.com/unity/whats-new/unity-3.4)
 
 ## Weiteres
 ### PowerShell Hash Script
