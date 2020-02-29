@@ -1,16 +1,13 @@
 # Unity Versionen
 
-### TODO
-* Muss noch die Links sortieren. Glaube bei 5.5 hat er mehrere für verschiedene Editor Varianten.
-
 ## Informationen
-Falls ich mal wieder eine andere Version brauche, aber keinen Link dazu finde:
+Falls ich mal wieder eine andere Version brauche, aber keinen Link dazu finde.
 
 ### Allgemeines
 Ich kann nicht versprechen, dass auch alle Links funktionieren.
-Ich habe die mit PowerShell anhand des Hash-Wertes generieren lassen.
+Ich habe die meißten mit PowerShell anhand des Hash-Wertes generieren lassen.
 
-Unity Hub Links kann ich leider nicht einfügen. Markdown versteht die Links nicht.
+Unity Hub Links kann ich leider nicht als solche generieren. Markdown versteht solch eigene Links nicht.
 Man kann die aber einfach in einem Browser oder der OS-Suchleiste eingeben.
 Unity Hub öffnet sich dann und wird die Version installieren.
 
