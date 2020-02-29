@@ -111,8 +111,8 @@ public class UIManager : Singleton<UIManager> {
 
                 // add ips to dropdown lis
                 foreach(string address in LANHelperInstance._addresses) {
-                    // Todo: Port?
-                    var _thisOption = new List<string> {address};
+                    // Adding returned addresses to list. Showing port is optinal (port is set).
+                    var _thisOption = new List<string> {$"{address}:{NetworkingConstants.STD_SERVER_PORT}"};
                     _serverListDropdown.AddOptions(_thisOption);
                 }
                 if (LANHelperInstance._addresses.Count > 0) {
@@ -145,7 +145,7 @@ public class UIManager : Singleton<UIManager> {
     }
 
     public void StartServer() {
-        Debug.Log("UI::StartServer(): Server started.");
+        Debug.Log("UIManager::StartServer(): Server started.");
         
         // Starting "PingServer" and "GameServer" same time.
         LocalServerManager.Instance.StartServer();
@@ -159,7 +159,7 @@ public class UIManager : Singleton<UIManager> {
         _stopHostServer.interactable = true;
     }
     public void StopServer() {
-        Debug.Log("UI::StopServer(): Server stopped.");
+        Debug.Log("UIManager::StopServer(): Server stopped.");
 
         // Stopping Ping and GameServer.
         LocalServerManager.Instance.StopServer();
@@ -209,7 +209,7 @@ public class UIManager : Singleton<UIManager> {
 
         // Watch the coroutines. While loops might block the whole system.
         Debug.Log("UIManager::StartPing(): About to start coroutine SendPing with port " + NetworkingConstants.STD_SERVER_PORT);
-        StartCoroutine(LANHelperInstance.SendPing(26951, allowLocalAddress: true));
+        StartCoroutine(LANHelperInstance.SendPing(NetworkingConstants.PING_SERVER_PORT, allowLocalAddress: true));
     }
 
     public void QuitGame() {
@@ -227,7 +227,5 @@ public class UIManager : Singleton<UIManager> {
     private void OnApplicationQuit() {
         LANHelperInstance.CloseClient();
         LANHelperInstance.CloseServer();
-
-        Debug.Log("UIManager::OnQuit(): Still need to implement this.");
     }
 }

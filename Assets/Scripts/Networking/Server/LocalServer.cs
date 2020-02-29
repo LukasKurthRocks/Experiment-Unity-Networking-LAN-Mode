@@ -16,11 +16,14 @@ public class LocalServer {
     private static TcpListener _tcpListener;
     private static UdpClient _udpListener;
 
+    // TODO: check if needed.
+    public static bool _isStarted = false;
+
     public static void Start(int _maxPlayers, int _portNumber) {
         MaxPlayers = _maxPlayers;
         Port = _portNumber;
 
-        Debug.Log("Server::Start(): Starting server...");
+        Debug.Log("LocalServer::Start(): Starting server...");
         InitializeServerData();
 
         // TODO: Throw user back to menu is connection could not be set!
@@ -29,7 +32,8 @@ public class LocalServer {
             _tcpListener.Start();
             _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
         } catch (Exception _exception) {
-            Debug.LogError($"Server::Start(): Exception while trying to create tcp connection on port '{Port}': {_exception}");
+            Stop();
+            Debug.LogError($"LocalServer::Start(): Exception while trying to create tcp connection on port '{Port}': {_exception}");
             throw _exception; // Remove when throwback
         }
 
@@ -37,11 +41,12 @@ public class LocalServer {
             _udpListener = new UdpClient(Port);
             _udpListener.BeginReceive(UDPReceiveCallback, null);
         } catch (Exception _exception) {
-            Debug.LogError($"Server::Start(): Exception while trying to create udp connection on port '{Port}': {_exception}");
+            Debug.LogError($"LocalServer::Start(): Exception while trying to create udp connection on port '{Port}': {_exception}");
             throw _exception; // Remove when throwback
         }
 
-        Debug.Log($"Server::Start(): Started server on Port {Port}");
+        _isStarted = true;
+        Debug.Log($"LocalServer::Start(): Started server on Port {Port}");
     }
 
     private static void TCPConnectCallback(IAsyncResult _asyncResult) {
@@ -49,7 +54,7 @@ public class LocalServer {
         TcpClient _client = _tcpListener.EndAcceptTcpClient(_asyncResult);
         _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-        Debug.Log($"Server::TCPConnectCallback(): Incoming connection from {_client.Client.RemoteEndPoint}...");
+        Debug.Log($"LocalServer::TCPConnectCallback(): Incoming connection from {_client.Client.RemoteEndPoint}...");
 
         for (int i = 1; i <= MaxPlayers; i++) {
             if (clients[i].tcp.socket == null) {
@@ -58,7 +63,7 @@ public class LocalServer {
             }
         }
 
-        Debug.Log($"Server::TCPConnectCallback(): {_client.Client.RemoteEndPoint} failed to connect: Server full!");
+        Debug.Log($"LocalServer::TCPConnectCallback(): {_client.Client.RemoteEndPoint} failed to connect: Server full!");
     }
 
     private static void UDPReceiveCallback(IAsyncResult _asyncResult) {
@@ -68,11 +73,6 @@ public class LocalServer {
 
             // "Dont miss any incoming data"
             _udpListener.BeginReceive(UDPReceiveCallback, null);
-
-            // We could ask the udp packet types in here i guess ...
-            // TODO: Check if I SHOULD do this, as this would combine both servers.
-            // Maybe just leaving as it is?
-            // Comparing PacketID, PlayerID, STRING, LENGTH (WelcomeReceived) to PacketID, STRING, LENGTH (LanHelper=>Ping())
 
             // int = 4, no more data...
             if (_data.Length < 4) {
@@ -86,6 +86,14 @@ public class LocalServer {
                 // check for invalid clientId...
                 // should never get into here!
                 if (_clientId == 0) {
+                    /*
+                     * Here is the position I could implement the "ping" if not using the localping server.
+                     * One Problem is: first value would be the _packetID, not clientID.
+                     * Another thing: Most of the stuffed is not ready handling ping data,
+                     * as ping just gets resend to the one who sends it.
+                    */
+
+                    //HandleNonClientData( _packet);
                     return;
                 }
 
@@ -94,7 +102,7 @@ public class LocalServer {
                 // This should normally be reached via MaxPlayer count in tcp.
                 // No client should send data via udp if not connected. But it MIGHT BE happening.
                 if(clients.Count < _clientId) {
-                    Debug.LogError($"Server::UDPReceiveCallback(): There is no client available for playerID '{_clientId}' when players dictionary count is '{clients.Count}'.");
+                    Debug.LogError($"LocalServer::UDPReceiveCallback(): There is no client available for playerID '{_clientId}' when players dictionary count is '{clients.Count}'.");
                     return;
                 }
 
@@ -115,11 +123,24 @@ public class LocalServer {
         } catch (ObjectDisposedException _exception) {
             // When exiting PlayMode, this exception in thrown.
             // Catching it, in case it happens when NOT exiting PlayMode.
-            Debug.Log($"Server::UDPReceiveCallback(): UDP object has already been disposed, is server still open?: {_exception}");
+            Debug.Log($"LocalServer::UDPReceiveCallback(): UDP object has already been disposed, is server still open?: {_exception}");
         } catch (Exception _exception) {
-            Debug.Log($"Server::UDPReceiveCallback(): Error receiving UDP data: {_exception}");
+            Debug.Log($"LocalServer::UDPReceiveCallback(): Error receiving UDP data: {_exception}");
         }
     }
+
+    /*
+    /// <summary>Catching non-client data and handling it like it should.</summary>
+    private static void HandleNonClientData(Packet _packet) {
+        Debug.Log("Handling non client data received...");
+
+        string _packetMessage = _packet.ReadString();
+
+        Debug.Log($"Received 0 with message: {_packetMessage}. Calling packet Handler...");
+
+        packetHandlers[0](0, _packet);
+    }
+    */
 
     public static void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet) {
         try {
@@ -127,7 +148,7 @@ public class LocalServer {
                 _udpListener.BeginSend(_packet.ToArray(), _packet.Length(), _clientEndPoint, null, null);
             }
         } catch (Exception _exception) {
-            Debug.Log($"Server::SendUDPData(): Error sending data to {_clientEndPoint} via UDP: {_exception}");
+            Debug.Log($"LocalServer::SendUDPData(): Error sending data to {_clientEndPoint} via UDP: {_exception}");
         }
     }
 
@@ -153,7 +174,7 @@ public class LocalServer {
             { (int)ClientPackets.welcomeReceived, LocalServerReceive.WelcomeReceived },
             { (int)ClientPackets.playerMovement, LocalServerReceive.PlayerMovement }
         };
-        Debug.Log("Server::InitializeServerData(): Initialized packets.");
+        Debug.Log("LocalServer::InitializeServerData(): Initialized packets.");
     }
 
     /// <summary>Calling stop everytime Unity's PlayMode or application is closed.</summary>
@@ -164,5 +185,6 @@ public class LocalServer {
             _udpListener.Close();
 
         clients.Clear();
+        _isStarted = false;
     }
 }

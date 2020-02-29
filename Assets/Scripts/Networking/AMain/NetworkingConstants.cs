@@ -12,4 +12,5 @@ public class NetworkingConstants : MonoBehaviour {
     public const int STD_MAX_PLAYERS = 50;
     public const string STD_SERVER_IP = "127.0.0.1"; // Especially in a LAN.
     public const int STD_SERVER_PORT = 26950;
+    public const int PING_SERVER_PORT = 26951;
 }

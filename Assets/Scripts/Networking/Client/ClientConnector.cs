@@ -27,7 +27,7 @@ public class ClientConnector : Singleton<ClientConnector> {
         udp = new UDP();
     }
 
-    // Unity Editor does not properly close open connections via PlayMode
+    // Unity Editor does not properly close open connections when exiting PlayMode
     private void OnApplicationQuit() {
         Disconnect();
     }
@@ -176,7 +176,7 @@ public class ClientConnector : Singleton<ClientConnector> {
             socket = new UdpClient(_localPort);
 
             if (endPoint == null)
-                Debug.LogWarning("ClientMain::UDP::Connect(): endPoint is null");
+                Debug.LogWarning("ClientConnector::UDP::Connect(): endPoint is null");
 
             socket.Connect(endPoint);
             socket.BeginReceive(ReceiveCallback, null);
@@ -194,16 +194,16 @@ public class ClientConnector : Singleton<ClientConnector> {
                     socket.BeginSend(_packet.ToArray(), _packet.Length(), null, null);
                 }
             } catch (Exception _exception) {
-                Debug.Log($"ClientMain::UDP::SendData(): Error sending data to server via UDP: {_exception}");
+                Debug.Log($"ClientConnector::UDP::SendData(): Error sending data to server via UDP: {_exception}");
             }
         }
 
         private void ReceiveCallback(IAsyncResult _asyncResult) {
             try {
                 if (endPoint == null)
-                    Debug.LogError("ClientMain::UDP::ReceiveCallback(): endPoint is null");
+                    Debug.LogError("ClientConnector::UDP::ReceiveCallback(): endPoint is null");
                 if (socket == null)
-                    Debug.LogError("ClientMain::UDP::ReceiveCallback(): socket is null");
+                    Debug.LogError("ClientConnector::UDP::ReceiveCallback(): socket is null");
 
                 byte[] _data = socket.EndReceive(_asyncResult, ref endPoint);
                 socket.BeginReceive(ReceiveCallback, null);
@@ -223,7 +223,7 @@ public class ClientConnector : Singleton<ClientConnector> {
                 // MS DOCS!!
                 HandleData(_data);
             } catch (Exception _exception) {
-                Debug.LogError($"ClientMain::UDP::ReceiveCallback(): Error handling receiveCallback: {_exception}");
+                Debug.LogError($"ClientConnector::UDP::ReceiveCallback(): Error handling receiveCallback: {_exception}");
 
                 // Disconnecting client
                 Disconnect();

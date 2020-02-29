@@ -60,7 +60,6 @@ public class LANUIManager : MonoBehaviour {
     }
 
     private void OnApplicationQuit() {
-        // TODO: Move where it belongs
         LANHelperInstance.CloseClient();
         LANHelperInstance.CloseServer();
     }
@@ -110,7 +109,7 @@ public class LANUIManager : MonoBehaviour {
         _percentSlider.SetActive(true);
         _isLoading = true;
 
-        // TODO: Deactivate all controls? Not messing with LAN scripting in here.
+        // May have to disable all controls while sending ping...
         LANHelperInstance.StartClient(55555);
         LANHelperInstance.ScanHost();
 
@@ -118,7 +117,7 @@ public class LANUIManager : MonoBehaviour {
         Debug.Log("About to start coroutine SendPing with port " + NetworkingConstants.STD_SERVER_PORT);
         StartCoroutine(LANHelperInstance.SendPing(NetworkingConstants.STD_SERVER_PORT, allowLocalAddress: true));
 
-        // TODO: Create a list or something...
+        // Printing out via debug.log, variable is public though...
         //PrintResults();
     }
 

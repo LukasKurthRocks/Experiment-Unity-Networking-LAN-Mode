@@ -29,7 +29,6 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
     private EndPoint _remoteEndPoint;
 
-    // TODO: Ensure you can only ping if no connection set yet...
     // In local I might be my own server.
     private bool _suppressLocalAddress = false;
 
@@ -89,7 +88,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 _socketClient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
                 if (_socketClient == null) {
-                    Debug.LogWarning("SocketClient creation failed");
+                    Debug.LogWarning("ClientLANHelper::StartClient(): SocketClient creation failed");
                     return;
                 }
 
@@ -101,12 +100,12 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                 _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-                _socketClient.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(_ReceiveClient), null);
+                _socketClient.BeginReceiveFrom(_receiveBuffer, 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(ReceiveClient), null);
             } catch (Exception ex) {
                 Debug.Log(ex.Message);
             }
         }
-        Debug.Log($"Started client on port {port}");
+        Debug.Log($"ClientLANHelper::StartClient(): Started client on port {port}");
     }
 
     public void CloseClient() {
@@ -115,14 +114,14 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
             _socketClient = null;
         }
 
-        Debug.Log("Closed socket on client.");
+        Debug.Log("ClientLANHelper::CloseClient(): Closed socket on client.");
     }
     #endregion
 
     public IEnumerator SendPing(int port, bool allowLocalAddress = false) {
         _suppressLocalAddress = allowLocalAddress;
 
-        Debug.Log("Ping::(): Started coroutine");
+        Debug.Log("ClientLANHelper::SendPing(): Started coroutine");
 
         _addresses.Clear();
 
@@ -145,9 +144,14 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                     IPEndPoint destinationEndPoint = new IPEndPoint(IPAddress.Parse(subAddress + ".255"), port);
                     byte[] str = Encoding.ASCII.GetBytes("ping");
 
+                    /*
+                     * Like in server packets I COULD set the clientID to 0, but the _packetID
+                     * would be send first and would need to be asked for first.
+                     * I just can not change this for now without changing a WHOLE LOT of code.
+                     * Maybe when Toms series has ended i will create my own code...
+                     */
                     // Have to create a normal packet here as the udp send needs
                     // the UDP already set. Not messing around with that yet.
-                    // TODO: Might send PlayerID == 0, server starts at 1, so this could be other packets!?
                     using (Packet _packet = new Packet((int)ClientPackets.ping)) {
                         // Write a message to the server. Is not needed though.
                         _packet.Write("ping");
@@ -187,7 +191,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
     }
     #endregion
 
-    private void _ReceiveClient(IAsyncResult ar) {
+    private void ReceiveClient(IAsyncResult ar) {
         if (_socketClient != null) {
             try {
                 //
@@ -197,7 +201,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                 if (size <= 0) {
                     // There should not be an empty packet.
-                    Debug.Log("Client received empty packet. Closing connection...");
+                    Debug.Log("ClientLANHelper::ReceiveClient(): Client received empty packet. Closing connection...");
                     CloseClient();
                     return;
                 }
@@ -220,9 +224,9 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                 // int has 4 bytes
                 if (_receivedData.UnreadLength() >= 4) {
-                    Debug.Log("LocalServer::HandleData(): UnreadLength() >= 4");
+                    Debug.Log("ClientLANHelper::ReceiveClient(): UnreadLength() >= 4");
                     _packetLength = _receivedData.ReadInt();
-                    Debug.Log($"LocalServer::HandleData(): _packageLength == {_packetLength}");
+                    Debug.Log($"ClientLANHelper::ReceiveClient(): _packageLength == {_packetLength}");
                     if (_packetLength <= 0) {
                         _receivedData.Reset();
                         //return;
@@ -231,7 +235,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                 // as long as we get data...
                 while (_packetLength > 0 && _packetLength <= _receivedData.UnreadLength()) {
-                    Debug.Log("LocalServer::HandleData(): While having data ...");
+                    Debug.Log("ClientLANHelper::ReceiveClient(): While having data ...");
                     byte[] _packetBytes = _receivedData.ReadBytes(_packetLength);
 
                     // Here is where the server packet is getting unwrapped.
@@ -243,7 +247,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
                         Debug.Log("" + _packetId + " msg: " + _packetMessage);
                     }
-                    Debug.Log("LocalServer::HandleData(): After packet.");
+                    Debug.Log("ClientLANHelper::ReceiveClient(): After packet.");
 
                     _packetLength = 0;
 
@@ -281,7 +285,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                     Debug.LogWarning("Server is local: " + address);
                 }
 
-                _socketClient.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(_ReceiveClient), null);
+                _socketClient.BeginReceiveFrom(new byte[1024], 0, 1024, SocketFlags.None, ref _remoteEndPoint, new AsyncCallback(ReceiveClient), null);
             } catch (Exception ex) {
                 Debug.Log(ex.ToString());
             }
@@ -290,7 +294,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
 
     /// <summary>Adding local ip addresses - from current host - to dictionary.</summary>
     public void ScanHost() {
-        Debug.Log("ClientLocalConnectionHelper::ScanHost(): Scanning host for local addresses ...");
+        Debug.Log("ClientLANHelper::ScanHost(): Scanning host for local addresses ...");
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
         foreach (IPAddress ip in host.AddressList) {
@@ -298,7 +302,7 @@ public class ClientLANHelper : Singleton<ClientLANHelper> {
                 string address = ip.ToString();
                 string subAddress = address.Remove(address.LastIndexOf('.'));
 
-                Debug.Log("ClientLocalConnectionHelper::ScanHost(): IP: " + address);
+                Debug.Log("ClientLANHelper::ScanHost(): IP: " + address);
                 _localAddresses.Add(address);
 
                 if (!_localSubAddresses.Contains(subAddress)) {

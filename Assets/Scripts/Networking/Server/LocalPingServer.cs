@@ -12,10 +12,7 @@ public class LocalPingServer {
 
     public static int dataBufferSize = 4096;
 
-    // TODO: Check is this is enough. Packets in server having "string _remoteIP, Packet _packet".
-    //public delegate void PacketHandler(ref EndPoint _remoteEndPoint, ref Socket _socketServer, Packet _packet);
     public delegate void PacketHandler(string _remoteConnection, Packet _packet);
-    //public delegate void PacketHandler(Packet _packet);
     public static Dictionary<int, PacketHandler> packetHandlers;
 
     private static Socket _socketServer;
@@ -25,7 +22,7 @@ public class LocalPingServer {
     private static byte[] _receiveBuffer;
 
     // TODO: Using this somewhere.
-    //private static bool _isStarted = false;
+    //public static bool _isStarted = false;
 
     public static void Start(int _portNumber) {
         Port = _portNumber;
@@ -34,16 +31,16 @@ public class LocalPingServer {
         _receivedData = new Packet();
         _receiveBuffer = new byte[dataBufferSize];
 
-        Debug.Log("LANServer::Start(): Starting server...");
+        Debug.Log("LocalPingServer::Start(): Starting server...");
         InitializeServerData();
 
         if (_socketServer == null) {
             try {
-                // TODO. Find out which is better: this or "new UdpClient(Port);"!?
+                // TODO: Find out which is better: this or "new UdpClient(Port);"!?
                 _socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
                 if (_socketServer == null) {
-                    Debug.LogWarning("LANServer::Start(): SocketServer creation failed");
+                    Debug.LogWarning("LocalPingServer::Start(): SocketServer creation failed");
                     return;
                 }
 
@@ -61,14 +58,14 @@ public class LocalPingServer {
                 Debug.Log(ex.Message);
             }
 
-            Debug.Log($"LANServer::Start(): Started server on port {Port}");
+            Debug.Log($"LocalPingServer::Start(): Started server on port {Port}");
         }
 
         //_isStarted = true;
     }
 
     private static void ServerReceiveCallback(IAsyncResult _asyncResult) {
-        Debug.Log("LANServer::SocketOnReceiveCallBack(): received ...");
+        Debug.Log("LocalPingServer::SocketOnReceiveCallBack(): received ...");
         if (_socketServer != null) {
             try {
                 int size = _socketServer.EndReceiveFrom(_asyncResult, ref _remoteEndPoint);
@@ -148,7 +145,7 @@ public class LocalPingServer {
             _socketServer.Close();
             _socketServer = null;
 
-            Debug.Log("LANServer::CloseServer(): Closed socket on server.");
+            Debug.Log("LocalPingServer::Stop(): Closed socket on server.");
         }
 
         //_isStarted = false;
@@ -158,11 +155,11 @@ public class LocalPingServer {
     public static void SendUDPData(Packet _packet) {
         try {
             if (_remoteEndPoint != null) {
-                Debug.Log($"LocalServer::SendUDPData(): Sending with {_socketServer.LocalEndPoint}, {_remoteEndPoint}");
+                Debug.Log($"LocalPingServer::SendUDPData(): Sending with {_socketServer.LocalEndPoint}, {_remoteEndPoint}");
                 _socketServer.SendTo(_packet.ToArray(), _packet.Length(), SocketFlags.None, _remoteEndPoint);
             }
         } catch (Exception _exception) {
-            Debug.Log($"Server::SendUDPData(): Error sending data to {_remoteEndPoint} via UDP: {_exception}");
+            Debug.Log($"LocalPingServer::SendUDPData(): Error sending data to {_remoteEndPoint} via UDP: {_exception}");
         }
     }
 
@@ -171,18 +168,12 @@ public class LocalPingServer {
         packetHandlers = new Dictionary<int, PacketHandler>() {
             { (int)ClientPackets.ping, LocalServerReceive.Ping }
         };
-        Debug.Log("LANServer::InitializeServerData(): Initialized packets.");
+        Debug.Log("LocalPingServer::InitializeServerData(): Initialized packets.");
     }
 
     // just for sending the pong, so local player has ip
     public static string GetLocalAddress() {
         IPEndPoint endPoint = _socketServer.LocalEndPoint as IPEndPoint;
         return endPoint.Address.ToString();
-    }
-
-    // TODO: Not only close the server in here.
-    // Can not even close this in here because NOT MONOBEHAVIOUR!
-    private void OnApplicationQuit() {
-        Stop();
     }
 }

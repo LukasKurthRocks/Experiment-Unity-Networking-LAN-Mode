@@ -46,7 +46,7 @@ public class LocalServerManager : Singleton<LocalServerManager> {
         //LocalPingServer.Start(NetworkingConstants.STD_SERVER_PORT);
         
         // Test: Start "PingServer" AND "GameServer"
-        LocalPingServer.Start(26951);
+        LocalPingServer.Start(NetworkingConstants.PING_SERVER_PORT);
         LocalServer.Start(2, NetworkingConstants.STD_SERVER_PORT);
     }
 

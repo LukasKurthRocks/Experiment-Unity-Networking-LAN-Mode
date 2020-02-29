@@ -57,15 +57,14 @@ public class LocalServerSend {
         Debug.Log($"LocalServerSend::SendPong(): Sending pong with adress: {LocalPingServer.GetLocalAddress()}");
         using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
             _returnPacket.Write("pong");
+
+            // Sending informative data
             _returnPacket.Write(LocalPingServer.GetLocalAddress());
             //_returnPacket.Write(LocalServer.MaxPlayers);
             //_returnPacket.Write(LocalServer.clients.Count);
+
             _returnPacket.WriteLength();
 
-            // TODO: Have to remove "LocalServerOnly", but not having "Remote endpoint" then ...
-            //_socketServer.BeginSend()
-            //_socketServer.SendTo();
-            //_socketServer.SendTo(_returnPacket.ToArray(), _returnPacket.Length(), SocketFlags.None, _remoteEndPoint);
             LocalPingServer.SendUDPData(_returnPacket);
         }
     }
@@ -73,15 +72,15 @@ public class LocalServerSend {
         Debug.Log($"LocalServerSend::SendPong(): Sending pong with adress: {LocalPingServer.GetLocalAddress()}");
         using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
             _returnPacket.Write("pong");
+
+            // Sending informative data
             _returnPacket.Write(LocalPingServer.GetLocalAddress());
             //_returnPacket.Write(LocalServer.MaxPlayers);
             //_returnPacket.Write(LocalServer.clients.Count);
+
             _returnPacket.WriteLength();
 
-            // TODO: Have to remove "LocalServerOnly", but not having "Remote endpoint" then ...
-            //_socketServer.BeginSend()
-            //_socketServer.SendTo();
-            //_socketServer.SendTo(_returnPacket.ToArray(), _returnPacket.Length(), SocketFlags.None, _remoteEndPoint);
+            // Sending ping data back to the remove endpoint how did SendPing()
             LocalPingServer.SendUDPData(_returnPacket);
         }
     }
