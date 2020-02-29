@@ -109,8 +109,13 @@ public class UIManager : Singleton<UIManager> {
                 // closing the client
                 LANHelperInstance.CloseClient();
 
-                // add ips to dropdown lis
-                foreach(string address in LANHelperInstance._addresses) {
+                // Clearing list and setting a standard option.
+                // Might have to implement a proper behaviour for the online part somehow.
+                _serverListDropdown.ClearOptions();
+                _serverListDropdown.AddOptions(new List<string> { "Online Server" });
+
+                // Adding IPs to dropdown list
+                foreach (string address in LANHelperInstance._addresses) {
                     // Adding returned addresses to list. Showing port is optinal (port is set).
                     var _thisOption = new List<string> {$"{address}:{NetworkingConstants.STD_SERVER_PORT}"};
                     _serverListDropdown.AddOptions(_thisOption);
