@@ -313,7 +313,7 @@ __2019.3.0a2__ | fa7740529556 | unityhub://2019.3.0a2/fa7740529556 | [Whats new 
 5.5.3 | N/A | N/A | [Whats new in Unity 5.5.3](https://unity3d.com/unity/whats-new/unity-5.5.3)
 5.5.2 | N/A | N/A | [Whats new in Unity 5.5.2](https://unity3d.com/unity/whats-new/unity-5.5.2)
 5.5.1 | N/A | N/A | [Whats new in Unity 5.5.1](https://unity3d.com/unity/whats-new/unity-5.5.1)
-5.5.0 | N/A | N/A | [Whats new in Unity 5.5.0](https://unity3d.com/unity/whats-new/unity-5.5.0)
+5.5.0 | 38b4efef76f0 | unityhub://5.5.0f3/38b4efef76f0 | [Whats new in Unity 5.5.0](https://unity3d.com/unity/whats-new/unity-5.5.0)
 5.5 | 38b4efef76f0 | unityhub://5.5/38b4efef76f0 | [Whats new in Unity 5.5](https://unity3d.com/unity/whats-new/unity-5.5.0)
 5.4.6 | N/A | N/A | [Whats new in Unity 5.4.6](https://unity3d.com/unity/whats-new/unity-5.4.6)
 5.4.5 | N/A | N/A | [Whats new in Unity 5.4.5](https://unity3d.com/unity/whats-new/unity-5.4.5)
