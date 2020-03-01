@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if false
+
 public interface IServerPlayerCloneControllers {
     int playerID { get; set; }
 
@@ -14,3 +16,5 @@ public interface IServerPlayerCloneControllers {
 
     void MovePlayer(Vector2 _inputDirection);
 }
+
+#endif
