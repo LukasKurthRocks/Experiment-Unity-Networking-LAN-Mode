@@ -22,10 +22,8 @@ public class ClientSend : MonoBehaviour {
         using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived)) {
             _packet.Write(ClientConnector.Instance.myId);
 
-            // TODO: Implement Username
-            // Not found a better way of getting the username field text.
-            //_packet.Write(UIManager.Instance.GetUsernameText());
-            _packet.Write("REPLACEMENT USER NAME");
+            // Not found a better way of getting the username field text yet.
+            _packet.Write(UIManager.Instance.GetUsernameText());
 
             SendTCPData(_packet);
         }

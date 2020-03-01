@@ -195,7 +195,7 @@ public class ClientConnector : Singleton<ClientConnector> {
                     socket.BeginSend(_packet.ToArray(), _packet.Length(), null, null);
                 }
             } catch (Exception _exception) {
-                Debug.Log($"ClientConnector::UDP::SendData(): Error sending data to server via UDP: {_exception}");
+                Debug.LogError($"ClientConnector::UDP::SendData(): Error sending data to server via UDP: {_exception}");
             }
         }
 
@@ -208,10 +208,6 @@ public class ClientConnector : Singleton<ClientConnector> {
 
                 byte[] _data = socket.EndReceive(_asyncResult, ref endPoint);
                 socket.BeginReceive(ReceiveCallback, null);
-
-                if (_data == null)
-                    Debug.LogWarning("_data in clientconnector is null");
-                Debug.Log("_data.Length = " + _data.Length);
 
                 // LESS THAN 4 STUPID MEE!!
                 // int = 4, no more data...
@@ -279,6 +275,9 @@ public class ClientConnector : Singleton<ClientConnector> {
                 udp.socket.Close();
 
             Debug.Log("ClientConnector::Disconnect(): Disconnected from server.");
+
+            //Destroy(ClientManager.players[myId].gameObject);
+            //ClientManager.players.Remove(myId);
         }
     }
 }

@@ -15,6 +15,9 @@ public class LocalServerManager : Singleton<LocalServerManager> {
     [SerializeField]
     private bool _isStarted = false;
 
+    // Movement for the player, adjust with own functionality.
+    public PlayerController masterClient = null;
+
     void Start() {
         if (_playerPrefab == null)
             Debug.LogWarning("LocalServerManager::Start(): _playerPrefab is null.");
@@ -53,7 +56,12 @@ public class LocalServerManager : Singleton<LocalServerManager> {
         return _thatPlayer;
     }
 
-    // TODO: public void SpawnMasterClient() {}
+    public void SpawnMasterClient(int _playerId, string _username, Vector3 _position, Quaternion _rotation) {
+        ClientManager.Instance.SpawnMasterClient(_playerId, _username, _position, _rotation);
+
+        // Blocking IDso I can send MASTER Information?
+        LocalServer.clients[_playerId].tcp.socket = new System.Net.Sockets.TcpClient();
+    }
     #endregion
 
     public void StartServer() {

@@ -98,8 +98,6 @@ public class LocalServer {
                     return;
                 }
 
-                Debug.Log("received client id: " + _clientId);
-
                 // This should normally be reached via MaxPlayer count in tcp.
                 // No client should send data via udp if not connected. But it MIGHT BE happening.
                 if(clients.Count < _clientId) {

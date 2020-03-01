@@ -54,7 +54,6 @@ public class ServerClientConnector {
             _networkStream.BeginRead(_receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
             // Send welcome to connected client
-            Debug.Log($"SCC::REMOVE(): Sending welcome message to {_id}");
             LocalServerSend.Welcome(_id, "Welcome to the server!");
         }
 
@@ -64,7 +63,7 @@ public class ServerClientConnector {
                     _networkStream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
                 }
             } catch (Exception _exception) {
-                Debug.Log($"ClientConnectionConsolidator::TCP::SendData(): Error sending data to player {_id} via TCP: {_exception}");
+                Debug.Log($"ServerClientConnector::TCP::SendData(): Error sending data to player {_id} via TCP: {_exception}");
             }
         }
 
@@ -87,7 +86,7 @@ public class ServerClientConnector {
                 // Continue reading data from stream
                 _networkStream.BeginRead(_receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
             } catch (Exception _exception) {
-                Debug.Log($"ClientConnectionConsolidator::TCP::ReceiveCallback(): Error receiving TCP data: {_exception}");
+                Debug.Log($"ServerClientConnector::TCP::ReceiveCallback(): Error receiving TCP data: {_exception}");
 
                 // Disconnecting client/player
                 LocalServer.clients[_id].Disconnect();
@@ -190,7 +189,6 @@ public class ServerClientConnector {
 
     /// <summary>Sending the player into the game. Combined with player movement.</summary>
     public void SendIntoGame(string _playerName) {
-        Debug.Log("Instantiating Player from Server // REMOVE");
         player = LocalServerManager.Instance.InstantiatePlayer();
         player.Initialize(id, _playerName);
 
@@ -198,7 +196,7 @@ public class ServerClientConnector {
         foreach (ServerClientConnector _client in LocalServer.clients.Values) {
             if (_client.player != null) {
                 if (_client.id != id) {
-                    Debug.Log($"ClientConnectionConsolidator::SendIntoGame(): Sending spawning information for player with id {_client.id} to client with id {id}.");
+                    Debug.Log($"ServerClientConnector::SendIntoGame(): Sending spawning information for player with id {_client.id} to client with id {id}.");
                     LocalServerSend.SpawnPlayer(id, _client.player);
                 }
             }
@@ -207,37 +205,35 @@ public class ServerClientConnector {
         // send new player informations to other players (and himself)
         foreach (ServerClientConnector _client in LocalServer.clients.Values) {
             if (_client.player != null) {
-                Debug.Log($"ClientConnectionConsolidator::SendIntoGame(): Sending spawning information for new player with id {player.GetPlayerID()} to player with id {_client.id}.");
+                Debug.Log($"ServerClientConnector::SendIntoGame(): Sending spawning information for new player with id {player.GetPlayerID()} to player with id {_client.id}.");
                 LocalServerSend.SpawnPlayer(_client.id, player);
             }
         }
 
         // Sending "MasterClient" information to everyone!
         // Might create a player controller abstraction to use...
-        /*
         if (LocalServerManager.Instance != null && LocalServerManager.Instance.masterClient != null) {
             PlayerController _masterClient = LocalServerManager.Instance.masterClient;
             if (_masterClient != null && _masterClient.player != null) {
-                foreach (ServerClientConnector _client in LocalServerSend.clients.Values) {
+                foreach (ServerClientConnector _client in LocalServer.clients.Values) {
                     if (_client.player != null && _client.id != _masterClient.player.GetPlayerID()) {
-                        Debug.Log($"ClientConnectionConsolidator::SendIntoGame(): Sending spawning information for new player with id {_masterClient.player.GetPlayerID()} to player with id {_client.id}.");
+                        Debug.Log($"ServerClientConnector::SendIntoGame(): Sending spawning information for new player with id {_masterClient.player.GetPlayerID()} to player with id {_client.id}.");
                         LocalServerSend.SpawnPlayer(_client.id, _masterClient.player.GetPlayerID(), _masterClient.player.GetUsername(), _masterClient.gameObject.transform.position, _masterClient.gameObject.transform.rotation);
                     }
                 }
             }
         }
-        */
     }
 
     /// <summary>Properly handling client disconnections.</summary>
     public void Disconnect() {
-        Debug.Log($"ClientConnectionConsolidator::Disconnect(): {tcp.socket.Client.RemoteEndPoint} has disconnected.");
+        Debug.Log($"ServerClientConnector::Disconnect(): {tcp.socket.Client.RemoteEndPoint} has disconnected.");
 
         // Attempting to destroy object from other than main thread will not work.
         ThreadManager.ExecuteOnMainThread(() => {
             // Had a problem while moving project. Player was null once. Should not happen normally.
             if (player == null) {
-                Debug.LogError("ClientConnectionConsolidator::Disconnect(): ThreadManager wanted to destroy player, but is already null...! THIS SHOULD NOT HAPPEN!");
+                Debug.LogError("ServerClientConnector::Disconnect(): ThreadManager wanted to destroy player, but is already null...! THIS SHOULD NOT HAPPEN!");
                 return;
             }
             UnityEngine.Object.Destroy(player.gameObject);

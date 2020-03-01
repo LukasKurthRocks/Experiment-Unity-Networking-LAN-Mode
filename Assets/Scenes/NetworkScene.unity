@@ -8107,7 +8107,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerPrefab: {fileID: 6487755064349446745, guid: 1e7c8417207fc40419044cf24253efdb,
     type: 3}
-  _masterClientPrefab: {fileID: 0}
+  _masterClientPrefab: {fileID: 6487755064349446745, guid: 63d08c60d3b01c64289b14ef920676d7,
+    type: 3}
   _isStarted: 0
 --- !u!1 &1052029225
 GameObject:
@@ -8745,11 +8746,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 184049eab7d289e4fa8a3ac4faaa33ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localPlayerPrefab: {fileID: 6487755064349446745, guid: d7215fb2fb54ccf4798f9865786bc774,
+  _playerPrefab: {fileID: 6487755064349446745, guid: d7215fb2fb54ccf4798f9865786bc774,
     type: 3}
-  _playerPrefab: {fileID: 6487755064349446745, guid: fec7d85b142950d41ac4c893515705d9,
+  _playerClonePrefab: {fileID: 6487755064349446745, guid: fec7d85b142950d41ac4c893515705d9,
     type: 3}
-  _masterClientPrefab: {fileID: 0}
+  _masterClientPrefab: {fileID: 6487755064349446745, guid: 63d08c60d3b01c64289b14ef920676d7,
+    type: 3}
 --- !u!1 &1118163963
 GameObject:
   m_ObjectHideFlags: 0

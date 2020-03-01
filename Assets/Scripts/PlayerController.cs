@@ -42,8 +42,7 @@ public class PlayerController : MonoBehaviour {
         _inputs = new bool[5];
 
         if (player.GetPlayerType() == PlayerType.MasterClient) {
-            // TODO: Doing this with the master client?
-            // LocalServerManager.Instance.masterClient = this;
+            LocalServerManager.Instance.masterClient = this;
         }
     }
 

@@ -8,9 +8,9 @@ public class ClientManager : Singleton<ClientManager> {
 
     [Header("Player Prefabs")]
     [SerializeField]
-    private GameObject _localPlayerPrefab = null;
-    [SerializeField]
     private GameObject _playerPrefab = null;
+    [SerializeField]
+    private GameObject _playerClonePrefab = null;
     [SerializeField]
     private GameObject _masterClientPrefab = null;
 
@@ -19,11 +19,10 @@ public class ClientManager : Singleton<ClientManager> {
         GameObject _player;
 
         // is player = localPlayer?
-        Debug.Log("REMOVE:(): Instantiating Player...");
         if (_id == ClientConnector.Instance.myId) {
-            _player = Instantiate(_localPlayerPrefab, _position, _rotation);
-        } else {
             _player = Instantiate(_playerPrefab, _position, _rotation);
+        } else {
+            _player = Instantiate(_playerClonePrefab, _position, _rotation);
         }
 
         _player.GetComponent<Player>().SetPlayerID(_id);
@@ -34,13 +33,12 @@ public class ClientManager : Singleton<ClientManager> {
     }
 
     public void SpawnMasterClient(int _id, string _username, Vector3 _position, Quaternion _rotation) {
-        Debug.Log("Spawning Master CLinet // REMOVE!");
         GameObject _masterClient = Instantiate(_masterClientPrefab, _position, _rotation);
 
         _masterClient.GetComponent<Player>().SetPlayerID(_id);
         _masterClient.GetComponent<Player>().SetUsername(_username);
 
-        Debug.Log($"ClientManager::SpawnPlayer(): Adding player with id {_id} to _player array.");
+        Debug.Log($"ClientManager::SpawnMasterClient(): Adding player with id {_id} to _player array.");
         players.Add(_id, _masterClient.GetComponent<Player>());
     }
 }

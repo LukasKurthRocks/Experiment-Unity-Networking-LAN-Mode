@@ -159,9 +159,12 @@ public class UIManager : Singleton<UIManager> {
         DisableMenuItems();
         
         if (_isHost) {
-            Debug.Log("UIManager::StartServer(): Hosting a game. Function not yet implemented...");
+            Debug.Log("UIManager::StartServer(): Hosting a game...");
 
-            //ClientManager.Instance.SpawnMasterClient(1, GetUsernameText(), new Vector3(0F, 0.5F, 0F), Quaternion.identity);
+            // "Connecting" the server itself as the first client => master client.
+            //int clientCount = LocalServer.clients.Count; // not using, but reading client id +1.
+            LocalServerManager.Instance.SpawnMasterClient(1, GetUsernameText(), new Vector3(0F, 0.5F, 0F), Quaternion.identity);
+
             _startHostServer.gameObject.SetActive(false);
             _stopHostServer.gameObject.SetActive(true);
             _stopHostServer.interactable = true;
@@ -242,6 +245,10 @@ public class UIManager : Singleton<UIManager> {
         #else
         Application.Quit(0);
         #endif
+    }
+
+    public string GetUsernameText() {
+        return _username.text;
     }
 
     private void OnApplicationQuit() {

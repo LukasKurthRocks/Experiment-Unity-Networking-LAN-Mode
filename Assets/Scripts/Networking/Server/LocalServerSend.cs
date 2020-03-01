@@ -95,7 +95,6 @@ public class LocalServerSend {
             _packet.Write(_message);
             _packet.Write(_toClient);
 
-            Debug.Log("LSS:Remove(): Calling SendTCPData.");
             SendTCPData(_toClient, _packet);
         }
     }

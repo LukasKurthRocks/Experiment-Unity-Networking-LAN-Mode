@@ -33,7 +33,7 @@ public class ClientReceive : MonoBehaviour {
         Vector3 _position = _packet.ReadVector3();
 
         // For debugging purposes.
-        // Debug.Log($"ClientReceive::PlayerPosition::() Changing transform of player with id: {_id}");
+        //Debug.Log($"ClientReceive::PlayerPosition() Changing transform of player with id: {_id}. Num players: {ClientManager.players.Count}");
 
         ClientManager.players[_id].transform.position = _position;
     }
@@ -41,6 +41,9 @@ public class ClientReceive : MonoBehaviour {
     public static void PlayerRotation(Packet _packet) {
         int _id = _packet.ReadInt();
         Quaternion _rotation = _packet.ReadQuarternion();
+
+        // For debugging purposes.
+        //Debug.Log($"ClientReceive::PlayerRotation() Changing rotation of player with id: {_id}. Num players: {ClientManager.players.Count}");
 
         ClientManager.players[_id].transform.rotation = _rotation;
     }
