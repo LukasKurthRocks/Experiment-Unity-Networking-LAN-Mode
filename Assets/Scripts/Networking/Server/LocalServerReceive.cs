@@ -7,6 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+/*
+ * TODO: Just sending the input data back to client?
+ * Maybe even having everyone on same Player.MasterClient logic?
+ * Creating another "PlayerMovement" class with Vector parameters?
+ */
+
 public class LocalServerReceive {
     #region Packets
     // TODO: Remove or Keep?
