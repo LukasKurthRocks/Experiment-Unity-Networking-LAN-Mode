@@ -10,18 +10,18 @@ public class LocalServerSend {
     #region Send Data Functions
     private static void SendTCPData(int _toClient, Packet _packet) {
         _packet.WriteLength();
-        //LocalServer.clients[_toClient].tcp.SendData(_packet);
+        LocalServer.clients[_toClient].tcp.SendData(_packet);
     }
 
     private static void SendUDPData(int _toClient, Packet _packet) {
         _packet.WriteLength();
-        //LocalServer.clients[_toClient].udp.SendData(_packet);
+        LocalServer.clients[_toClient].udp.SendData(_packet);
     }
 
     private static void SendTCPDataToAll(Packet _packet) {
         _packet.WriteLength();
         for (int i = 1; i <= LocalServer.MaxPlayers; i++) {
-            //LocalServer.clients[i].tcp.SendData(_packet);
+            LocalServer.clients[i].tcp.SendData(_packet);
         }
     }
 
@@ -29,7 +29,7 @@ public class LocalServerSend {
         _packet.WriteLength();
         for (int i = 1; i <= LocalServer.MaxPlayers; i++) {
             if (i != _exceptClient) {
-                //LocalServer.clients[i].tcp.SendData(_packet);
+                LocalServer.clients[i].tcp.SendData(_packet);
             }
         }
     }
@@ -37,7 +37,7 @@ public class LocalServerSend {
     private static void SendUDPDataToAll(Packet _packet) {
         _packet.WriteLength();
         for (int i = 1; i <= LocalServer.MaxPlayers; i++) {
-            //LocalServer.clients[i].udp.SendData(_packet);
+            LocalServer.clients[i].udp.SendData(_packet);
         }
     }
 
@@ -45,7 +45,7 @@ public class LocalServerSend {
         _packet.WriteLength();
         for (int i = 1; i <= LocalServer.MaxPlayers; i++) {
             if (i != _exceptClient) {
-                //LocalServer.clients[i].udp.SendData(_packet);
+                LocalServer.clients[i].udp.SendData(_packet);
             }
         }
     }
@@ -95,6 +95,7 @@ public class LocalServerSend {
             _packet.Write(_message);
             _packet.Write(_toClient);
 
+            Debug.Log("LSS:Remove(): Calling SendTCPData.");
             SendTCPData(_toClient, _packet);
         }
     }

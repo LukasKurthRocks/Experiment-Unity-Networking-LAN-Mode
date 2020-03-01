@@ -117,6 +117,7 @@ public class ClientConnector : Singleton<ClientConnector> {
         }
 
         private bool HandleData(byte[] _data) {
+            Debug.Log($"ClientConnector::TCP::HandleData(): Handling received TCP data.");
             int _packetLength = 0;
 
             _receivedData.SetBytes(_data);

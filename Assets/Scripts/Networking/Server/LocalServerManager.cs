@@ -1,18 +1,33 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class LocalServerManager : Singleton<LocalServerManager> {
     [Header("Preferences")]
+    // Prefabs
+    [SerializeField]
+    private GameObject _playerPrefab = null;
+    [SerializeField]
+    private GameObject _masterClientPrefab = null;
+    // Other Stuff
     [SerializeField]
     private bool _isStarted = false;
 
-    // Start is called before the first frame update
     void Start() {
-        if(IsHeadlessMode()) {
-            // TODO: Do this.
-            Debug.Log("LocalServerManager::Start(): Still nothing todo when headless (poor me). Shouldn't I check for master client prefab or starting the headless erver?");
+        if (_playerPrefab == null)
+            Debug.LogWarning("LocalServerManager::Start(): _playerPrefab is null.");
+        if (_masterClientPrefab == null)
+            Debug.LogWarning("LocalServerManager::Start(): _masterClientPrefab is null.");
+
+        // Create Server in batch mode / headless mode
+        // Call StartServer() from "Start Host" button when not!
+        if (IsHeadlessMode()) {
+            Debug.Log("LocalServerManager::Start(): detected headless mode. Calling StartServer()...");
+            StartServer();
+        } else {
+            Debug.Log("LocalServerManager::Start(): headless mode not detected. Start server with 'Start Host' button.");
         }
     }
 
@@ -20,17 +35,34 @@ public class LocalServerManager : Singleton<LocalServerManager> {
     private void OnApplicationQuit() {
         // just to make sure it only stops if it has been started
         // either via button "Start Host" or when in headless/batch mode.
-        if (_isStarted) {
+        if (IsServerStarted()) {
             StopServer();
         }
     }
 
     #region PlayerLogic
     // InstantiatePlayer
+    public Player InstantiatePlayer() {
+        Player _thatPlayer;
+        try {
+            _thatPlayer = Instantiate(_playerPrefab, new Vector3(0F, .5F, 0F), Quaternion.identity).GetComponent<Player>();
+            _thatPlayer.name = "PlayerClone_from_LSS";
+        } catch (Exception _exception) {
+            Debug.LogError($"LocalServerManager::InstantiatePlayer(): Error on instantiating player: {_exception}");
+            return null;
+        }
+        return _thatPlayer;
+    }
+
     // Spawn "MasterClient"
     #endregion
 
     public void StartServer() {
+        if (_isStarted) {
+            Debug.LogError("LocalServerManager::StartServer(): Server already started. Returning from function. TIPP: Call IsServerStarted() if needed.");
+            return;
+        }
+
         // Lower server CPU usage.
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
@@ -59,12 +91,16 @@ public class LocalServerManager : Singleton<LocalServerManager> {
     }
 
     /// <summary>Checking server for headless mode</summary>
-    public static bool IsHeadlessMode() {
+    public bool IsHeadlessMode() {
         return SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
     }
 
     /// <summary>Checking server for headless mode</summary>
-    public static bool IsHeadlessModeViaDeviceID() {
+    public bool IsHeadlessModeViaDeviceID() {
         return SystemInfo.graphicsDeviceID == 0;
+    }
+
+    public bool IsServerStarted() {
+        return _isStarted;
     }
 }

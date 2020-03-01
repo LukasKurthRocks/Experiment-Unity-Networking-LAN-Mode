@@ -48,6 +48,7 @@ public class ServerClientConnector {
             _networkStream.BeginRead(_receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
             // Send welcome to connected client
+            Debug.Log($"SCC::REMOVE(): Sending welcome message to {_id}");
             LocalServerSend.Welcome(_id, "Welcome to the server!");
         }
 
@@ -88,6 +89,7 @@ public class ServerClientConnector {
         }
 
         private bool HandleData(byte[] _data) {
+            Debug.Log($"ServerClientConnector::TCP::HandleData(): Handling server side client tcp data");
             int _packetLength = 0;
 
             _receivedData.SetBytes(_data);
@@ -153,10 +155,6 @@ public class ServerClientConnector {
 
         public void Connect(IPEndPoint _endPoint) {
             endPoint = _endPoint;
-
-            // just for remembering this
-            // sending players, so not needed.
-            //ServerSend.UDPTest(_id);
         }
 
         public void SendData(Packet _packet) {
@@ -186,7 +184,8 @@ public class ServerClientConnector {
 
     /// <summary>Sending the player into the game. Combined with player movement.</summary>
     public void SendIntoGame(string _playerName) {
-        //player = ServerManager.Instance.InstantiatePlayer();
+        Debug.Log("Instantiating Player from Server // REMOVE");
+        player = LocalServerManager.Instance.InstantiatePlayer();
         player.Initialize(id, _playerName);
 
         // send data from connected clients to current player

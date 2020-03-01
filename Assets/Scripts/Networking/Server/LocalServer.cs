@@ -41,6 +41,7 @@ public class LocalServer {
             _udpListener = new UdpClient(Port);
             _udpListener.BeginReceive(UDPReceiveCallback, null);
         } catch (Exception _exception) {
+            Stop();
             Debug.LogError($"LocalServer::Start(): Exception while trying to create udp connection on port '{Port}': {_exception}");
             throw _exception; // Remove when throwback
         }

@@ -19,6 +19,7 @@ public class ClientManager : Singleton<ClientManager> {
         GameObject _player;
 
         // is player = localPlayer?
+        Debug.Log("REMOVE:(): Instantiating Player...");
         if (_id == ClientConnector.Instance.myId) {
             _player = Instantiate(_localPlayerPrefab, _position, _rotation);
         } else {
@@ -33,6 +34,7 @@ public class ClientManager : Singleton<ClientManager> {
     }
 
     public void SpawnMasterClient(int _id, string _username, Vector3 _position, Quaternion _rotation) {
+        Debug.Log("Spawning Master CLinet // REMOVE!");
         GameObject _masterClient = Instantiate(_masterClientPrefab, _position, _rotation);
 
         _masterClient.GetComponent<Player>().SetPlayerID(_id);

@@ -149,33 +149,48 @@ public class UIManager : Singleton<UIManager> {
         }
     }
 
-    public void StartServer() {
+    /// <summary>Only start the server.</summary>
+    public void StartServer(bool _isHost = false) {
         Debug.Log("UIManager::StartServer(): Server started.");
         
         // Starting "PingServer" and "GameServer" same time.
         LocalServerManager.Instance.StartServer();
-        
-        //LocalPingServer.Start(26951);
-        //LocalServer.Start(2, 26950);
 
         DisableMenuItems();
-        _startHostServer.gameObject.SetActive(false);
-        _stopHostServer.gameObject.SetActive(true);
-        _stopHostServer.interactable = true;
+        
+        if (_isHost) {
+            Debug.Log("UIManager::StartServer(): Hosting a game. Function not yet implemented...");
+
+            //ClientManager.Instance.SpawnMasterClient(1, GetUsernameText(), new Vector3(0F, 0.5F, 0F), Quaternion.identity);
+            _startHostServer.gameObject.SetActive(false);
+            _stopHostServer.gameObject.SetActive(true);
+            _stopHostServer.interactable = true;
+        } else {
+            _startPingServer.gameObject.SetActive(false);
+            _stopPingServer.gameObject.SetActive(true);
+            _stopPingServer.interactable = true;
+        }
     }
+
+    // TODO: When started in "Host Mode" killing client AND server session (MasterClient or whatever)
+    /// <summary>Stopping the server</summary>
     public void StopServer() {
         Debug.Log("UIManager::StopServer(): Server stopped.");
 
         // Stopping Ping and GameServer.
         LocalServerManager.Instance.StopServer();
-        
-        // LocalPingServer.Stop();
-        //LocalServer.Stop();
 
         DisableMenuItems(false);
+
+        // Re-enabling strating buttons for host server
         _startHostServer.gameObject.SetActive(true);
         _stopHostServer.gameObject.SetActive(false);
         _stopHostServer.interactable = false;
+
+        // Re-enabling strating buttons for listening server
+        _startPingServer.gameObject.SetActive(true);
+        _stopPingServer.gameObject.SetActive(false);
+        _stopPingServer.interactable = false;
     }
 
     public void StartClient() {
