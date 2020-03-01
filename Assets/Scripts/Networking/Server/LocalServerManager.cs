@@ -41,12 +41,11 @@ public class LocalServerManager : Singleton<LocalServerManager> {
     }
 
     #region PlayerLogic
-    // InstantiatePlayer
     public Player InstantiatePlayer() {
         Player _thatPlayer;
         try {
             _thatPlayer = Instantiate(_playerPrefab, new Vector3(0F, .5F, 0F), Quaternion.identity).GetComponent<Player>();
-            _thatPlayer.name = "PlayerClone_from_LSS";
+            _thatPlayer.SetUsername("PlayerClone_from_LSS");
         } catch (Exception _exception) {
             Debug.LogError($"LocalServerManager::InstantiatePlayer(): Error on instantiating player: {_exception}");
             return null;
@@ -54,7 +53,7 @@ public class LocalServerManager : Singleton<LocalServerManager> {
         return _thatPlayer;
     }
 
-    // Spawn "MasterClient"
+    // TODO: public void SpawnMasterClient() {}
     #endregion
 
     public void StartServer() {

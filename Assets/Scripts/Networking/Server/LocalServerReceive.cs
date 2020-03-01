@@ -76,7 +76,7 @@ public class LocalServerReceive {
         LocalServer.clients[_fromClient].SendIntoGame(_username);
     }
 
-    // TODO: Should I have to so this via playerInput?
+    // TODO: Setting player input via this or referencing a IPlayerController?
     // Local Server should just receive Client input, not calculating it...
     public static void PlayerMovement(int _fromClient, Packet _packet) {
         bool[] _inputs = new bool[_packet.ReadInt()];
@@ -86,12 +86,8 @@ public class LocalServerReceive {
 
         Quaternion _rotation = _packet.ReadQuarternion();
 
-        Debug.Log("TODO: Set player input. Maybe set an interface here?");
         // Setting player input when received, so server side player clone moves along.
-        //LocalServer.clients[_fromClient].player.GetComponent<PlayerController>().SetPlayerInput(_inputs, _rotation);
-
-        // TODO: Test if this can be used!!
-        //LocalServer.clients[_fromClient].player.GetComponent<IPlayerController>().SetPlayerInput(_inputs, _rotation);
+        LocalServer.clients[_fromClient].player.GetComponent<PlayerController>().SetPlayerInput(_inputs, _rotation);
     }
     #endregion
 }

@@ -8695,6 +8695,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1112618446}
+  - component: {fileID: 1112618448}
   - component: {fileID: 1112618447}
   m_Layer: 0
   m_Name: ClientManager
@@ -8732,6 +8733,23 @@ MonoBehaviour:
   ip: 127.0.0.1
   port: 26950
   myId: 0
+--- !u!114 &1112618448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112618445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 184049eab7d289e4fa8a3ac4faaa33ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _localPlayerPrefab: {fileID: 6487755064349446745, guid: d7215fb2fb54ccf4798f9865786bc774,
+    type: 3}
+  _playerPrefab: {fileID: 6487755064349446745, guid: fec7d85b142950d41ac4c893515705d9,
+    type: 3}
+  _masterClientPrefab: {fileID: 0}
 --- !u!1 &1118163963
 GameObject:
   m_ObjectHideFlags: 0

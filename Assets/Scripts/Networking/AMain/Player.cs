@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Used by ServerSend + NetworkManager
+/// <summary>
+/// Stored player information. Accessed e.g. by LocalServerSend and LocalServerManager-
+/// </summary>
 
 public class Player : MonoBehaviour {
     public enum PlayerType { Player, Clone, MasterClient }

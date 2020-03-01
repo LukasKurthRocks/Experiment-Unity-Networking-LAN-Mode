@@ -5,6 +5,12 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
+/// <summary>
+/// This is basically the same as the ClientConnector (Client.cs) from Toms tutorial series.
+/// Just adding the host as a client in here.
+/// TODO: Part #8 of the series...
+/// </summary>
+
 public class ServerClientConnector {
     // Storing client Information
     public static int dataBufferSize = 4096; // 4096 Bytes = 4 MBytes? Where?
@@ -209,8 +215,8 @@ public class ServerClientConnector {
         // Sending "MasterClient" information to everyone!
         // Might create a player controller abstraction to use...
         /*
-        if (ServerManager.Instance != null && ServerManager.Instance.masterClient != null) {
-            PlayerController _masterClient = ServerManager.Instance.masterClient;
+        if (LocalServerManager.Instance != null && LocalServerManager.Instance.masterClient != null) {
+            PlayerController _masterClient = LocalServerManager.Instance.masterClient;
             if (_masterClient != null && _masterClient.player != null) {
                 foreach (ServerClientConnector _client in LocalServerSend.clients.Values) {
                     if (_client.player != null && _client.id != _masterClient.player.GetPlayerID()) {
