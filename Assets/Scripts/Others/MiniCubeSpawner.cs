@@ -5,6 +5,7 @@ using UnityEngine;
 // Just a "basic" object spawner with a little directional thrust.
 // Added a gizmo just for showing. Do not need a mesh for this.
 // Should work on the removal of cubes sometime when rezising the list.
+// The UNITY_EDITOR is needed for building the project!
 
 public class MiniCubeSpawner : MonoBehaviour {
     [Header("Pipe Preferences")]
@@ -34,6 +35,7 @@ public class MiniCubeSpawner : MonoBehaviour {
         StartCoroutine(CubeInstantiator());
     }
 
+    #if UNITY_EDITOR
     private void OnDrawGizmos() {
         // Only sho gizmo when not selected
         if (UnityEditor.Selection.activeGameObject == gameObject && !_overrideGizmo)
@@ -54,6 +56,7 @@ public class MiniCubeSpawner : MonoBehaviour {
         
         Gizmos.DrawCube(transform.position, Vector3.one / 2);
     }
+    #endif
 
     private IEnumerator CubeInstantiator() {
         while (_canSpawn) {
