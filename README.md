@@ -1,5 +1,5 @@
-# LAN Multiplayer
-Gefühlt mein zehntes Netzwerk Projekt. Müsste mal meinen Unity Ordner ausmisten ...
+# Experiment: Unity LAN Multiplayer
+*Gefühlt mein zehntes Netzwerk Projekt. Müsste mal meinen Unity Ordner ausmisten ...*
 
 ## Aktuelles
 Dieses Projekt sollte als Test für mich dienen, unter anderem um die grundlegenden Funktionen des
@@ -12,6 +12,7 @@ Du kannst Dich dennoch frei fühöen und das Projekt clonen um es nach Deinen Vo
 Kleine Anhaltspunkte:
 * #8 von Toms Serie ist nicht implementiert
 * Beim stoppen des Hosts wird der Spieler nicht gekillt (habe ich noch keine Lust zu zu suchen).
+* Gibt einige TODO Punkte im Projekt die ich nicht verallgemeinern konnte. Können aber im allgemeinen ganz gut als Anhaltspunkte dienen um herauszufinden, wie man damit fortfahren möchte.
 
 ### Zu Erledigen
 * [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)?
