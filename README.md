@@ -7,7 +7,12 @@ Networking in C# zu erlernen. Somit dient dieses Projekt mehr als Beispiel wie m
 Das meiste davon sollte lieber pro Projekt neu aufgebaut werden (Die Spezifikationen für das Netzwerk hängen
 sowieso vom Spiel ab...).
 
-Du kannst Dich dennoch frei fühöen und das Projekt clonen um es nach Deinen Vorstellungen zu misbrauchen.
+Du kannst Dich dennoch frei fühlen und das Projekt clonen um es nach Deinen Vorstellungen zu misbrauchen.
+
+Letztes Kommentar durch den Commit:
+"Habe die Beispiele zum Senden der direkten Player Daten hinzugefügt. Kann die momentan aber nicht aufrufen, da ich auf dem Client keinen Check nach "Host Modus" habe (habe die "Server Funktionalität" also noch etwas drin gelassen). Ohne den Check weiß ich nicht ob der Client mit einem dedizierten Server oder einen lokalen Host verbunden ist, und kann somit das Movement, bzw. das Senden der Inputs an den Server, nicht direkt angehen.
+
+Ich hätte hier also noch genug zu tun wenn ich denn will, aber ich will gerade nicht. Das Projekt kann man ja trotzdem nutzen..."
 
 Kleine Anhaltspunkte:
 * #8 von Toms Serie ist nicht implementiert
