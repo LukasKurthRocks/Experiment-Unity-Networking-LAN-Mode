@@ -15,6 +15,7 @@ Kleine Anhaltspunkte:
 
 ### Zu Erledigen
 * [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)?
+* Sammeln von Netzwerk Informationen in EINEM Projekt... Sammeln der Informationen??
 
 ## Info
 Ziel ist es einen LAN Modus zu haben, damit man für kleine Spiele mit Freunden nicht auf
