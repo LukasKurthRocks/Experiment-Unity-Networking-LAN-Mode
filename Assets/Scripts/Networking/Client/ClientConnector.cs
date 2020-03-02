@@ -20,14 +20,14 @@ public class ClientConnector : Singleton<ClientConnector> {
     private delegate void PacketHandler(Packet _packet);
     private static Dictionary<int, PacketHandler> _packetHandlers;
 
-    // TODO: Create OnStart(), because of having LANServer
     private void Start() {
         Debug.Log("ClientConnector::Start(): called...");
         tcp = new TCP();
         udp = new UDP();
     }
 
-    // Unity Editor does not properly close open connections when exiting PlayMode
+    // Unity Editor does not properly close
+    // open connections when exiting PlayMode
     private void OnApplicationQuit() {
         Disconnect();
     }

@@ -5,8 +5,6 @@ using System.Net.Sockets;
 using UnityEngine;
 
 public class LocalServerSend {
-    // TODO: Re-enable LocalServer functions!
-
     #region Send Data Functions
     private static void SendTCPData(int _toClient, Packet _packet) {
         _packet.WriteLength();
@@ -52,22 +50,6 @@ public class LocalServerSend {
     #endregion
 
     #region LAN Packets
-    // TODO: Remove Socket and IPEndPoint.
-    public static void SendPong(ref Socket _socketServer, ref EndPoint _remoteEndPoint) {
-        Debug.Log($"LocalServerSend::SendPong(): Sending pong with adress: {LocalPingServer.GetLocalAddress()}");
-        using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
-            _returnPacket.Write("pong");
-
-            // Sending informative data
-            _returnPacket.Write(LocalPingServer.GetLocalAddress());
-            //_returnPacket.Write(LocalServer.MaxPlayers);
-            //_returnPacket.Write(LocalServer.clients.Count);
-
-            _returnPacket.WriteLength();
-
-            LocalPingServer.SendUDPData(_returnPacket);
-        }
-    }
     public static void SendPong() {
         Debug.Log($"LocalServerSend::SendPong(): Sending pong with adress: {LocalPingServer.GetLocalAddress()}");
         using (Packet _returnPacket = new Packet((int)ServerPackets.pong)) {
@@ -160,7 +142,7 @@ public class LocalServerSend {
             _packet.Write(_player.GetPlayerID());
             _packet.Write(_player.transform.rotation);
 
-            SendUDPDataToAll(_player.GetPlayerID(), _packet);
+            SendUDPDataToAll(_exceptClient: _player.GetPlayerID(), _packet);
         }
     }
 
@@ -172,7 +154,7 @@ public class LocalServerSend {
             _packet.Write(_id);
             _packet.Write(_rotation);
 
-            SendUDPDataToAll(_id, _packet);
+            SendUDPDataToAll(_exceptClient: _id, _packet);
         }
     }
     #endregion

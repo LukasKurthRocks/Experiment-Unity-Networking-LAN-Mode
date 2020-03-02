@@ -9,7 +9,7 @@ public class UIManager : Singleton<UIManager> {
     [SerializeField]
     private InputField _port = null;
     [SerializeField]
-    private InputField _username = null; // TODO: Still have to save this somewhere
+    private InputField _username = null; // #: Still have to save this somewhere
 
     // For controlling the button state
     [SerializeField]

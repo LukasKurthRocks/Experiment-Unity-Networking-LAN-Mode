@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Make searching for LAN hosts replacing the Server_IP.
-// TODO: Remove the todo from this class...
-
 public class NetworkingConstants : MonoBehaviour {
     public const int TICKS_PER_SECOND = 30;
     public const int MS_PER_TICK = 1000 / TICKS_PER_SECOND;

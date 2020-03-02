@@ -43,5 +43,18 @@ public class ClientSend : MonoBehaviour {
             SendUDPData(_packet);
         }
     }
+
+    // INFO: Only in LAN: Sending PlayerMovement directly to server.
+    // This is for having the server to relay it directly to the clients.
+    public static void PlayerMovement(Vector3 position, Quaternion rotation) {
+        using (Packet _packet = new Packet((int)ClientPackets.playerMovement)) {
+            _packet.Write(position);
+            _packet.Write(rotation);
+
+            // UDP "can afford" to loose some pakets. Just movement in here.
+            // PLUS: UDP is faster than TCP.
+            SendUDPData(_packet);
+        }
+    }
     #endregion
 }

@@ -8,7 +8,6 @@ using UnityEngine;
 /// <summary>
 /// This is basically the same as the ClientConnector (Client.cs) from Toms tutorial series.
 /// Just adding the host as a client in here.
-/// TODO: Part #8 of the series...
 /// </summary>
 
 public class ServerClientConnector {

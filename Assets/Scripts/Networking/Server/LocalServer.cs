@@ -16,7 +16,6 @@ public class LocalServer {
     private static TcpListener _tcpListener;
     private static UdpClient _udpListener;
 
-    // TODO: check if needed.
     public static bool _isStarted = false;
 
     public static void Start(int _maxPlayers, int _portNumber) {

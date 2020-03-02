@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if false
+
 public class LANUIManager : MonoBehaviour {
     [Header("Input Fields")]
     public InputField _port;
@@ -131,3 +133,5 @@ public class LANUIManager : MonoBehaviour {
         }
     }
 }
+
+#endif

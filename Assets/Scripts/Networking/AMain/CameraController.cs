@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Adjust this!
-// TODO: Add controller to LocalPlayerPrefabs Camera component
-
 public class CameraController : MonoBehaviour {
     public Player player;
     public float sensitivity = 100F;
