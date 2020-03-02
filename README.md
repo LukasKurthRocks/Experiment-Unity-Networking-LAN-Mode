@@ -1,14 +1,22 @@
-# LAN Multiplayer
-Gefühlt mein zehntes Netzwerk Projekt. Müsste mal meinen Unity Ordner ausmisten ...
+# Experiment: Unity LAN Multiplayer
+*Gefühlt mein zehntes Netzwerk Projekt. Müsste mal meinen Unity Ordner ausmisten ...*
 
 ## Aktuelles
+Dieses Projekt sollte als Test für mich dienen, unter anderem um die grundlegenden Funktionen des
+Networking in C# zu erlernen. Somit dient dieses Projekt mehr als Beispiel wie manches funktionieren könnte.
+Das meiste davon sollte lieber pro Projekt neu aufgebaut werden (Die Spezifikationen für das Netzwerk hängen
+sowieso vom Spiel ab...).
 
-Bin gerade noch am testen. Dies ist daher noch zu nichts zu gebrauchen.
+Du kannst Dich dennoch frei fühöen und das Projekt clonen um es nach Deinen Vorstellungen zu misbrauchen.
+
+Kleine Anhaltspunkte:
+* #8 von Toms Serie ist nicht implementiert
+* Beim stoppen des Hosts wird der Spieler nicht gekillt (habe ich noch keine Lust zu zu suchen).
+* Gibt einige TODO Punkte im Projekt die ich nicht verallgemeinern konnte. Können aber im allgemeinen ganz gut als Anhaltspunkte dienen um herauszufinden, wie man damit fortfahren möchte.
 
 ### Zu Erledigen
-* [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)
-* Muss den Lan Manager noch entsprechend hinzufügen und anpassen. Der verschickt nur einen String,
-ich brauche aber ein Paket aus der Packet.cs. Kriege ich hin, aber nicht mehr heute.
+* [Netzwerk Sachen rauslesen und vereinen (Merge)](https://github.com/LukasKurthRocks/Unity-Network-Client-V1)?
+* Sammeln von Netzwerk Informationen in EINEM Projekt... Sammeln der Informationen??
 
 ## Info
 Ziel ist es einen LAN Modus zu haben, damit man für kleine Spiele mit Freunden nicht auf
